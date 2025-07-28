@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://livefile.xesimg.com/programme/python_assets/a15c2ac3234aa8f6064ef9c1f7383c37.css">
+    <script src="https://livefile.xesimg.com/programme/python_assets/450d478c0491cf0b2d365997faff70dd.js"></script>
+    <script src="https://livefile.xesimg.com/programme/python_assets/8925116b63282ad29fe2259ab4768694.js"></script>
+    <script src="https://livefile.xesimg.com/programme/python_assets/e1d98d47689e00f8ecbc5d9f61bdb42e.js"></script>
+
+    <script src="https://livefile.xesimg.com/programme/python_assets/ad6bd7d082a1dbdb79a6ccecb4f196b7.js"></script>
+    <script src="https://livefile.xesimg.com/programme/python_assets/a1aed892093d63bd7f210bbe9ccf52b8.js"></script>
+    <script src="https://livefile.xesimg.com/programme/python_assets/79f46585b7a26d8bf01e45af4e770891.js"></script>
+    <script src="https://livefile.xesimg.com/programme/python_assets/e8329953e25c091582ca35b7a452f916.js"></script>
+
+    <title>XESChat - chat</title>
+
+    <style>
+        .container > div > .card {
+            min-width: 40vmin;
+            display: inline;
+            margin-bottom: .5rch;
+            height: fit-content
+        }
+        .custom-file-label::after {
+            content:"选择"
+        }
+    </style>
+</head>
+<!-- ?x-oss-process=image/rotate,10/rotate,350/blur,r_10,s_30/contrast,50/sharpen,100 -->
+<body><div class="container">
+    <iframe id="iframeElement" src="https://code.xueersi.com/xes%20chat/uploader"
+            style="border: 0" title="uploader" width="0" height="0"
+            sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
+
+    <div class="row align-self-center">
+        <div class="card card-body">
+            <h5 class="card-title">
+                用户信息设置
+            </h5>
+            <form autocomplete="off">
+                用户昵称
+                <div class="input-group mb-3">
+                    <label for="inp-name"></label>
+                    <input id="inp-name" type="text" class="form-control" placeholder="用户名">
+                    <script>
+                        document.getElementById("inp-name").maxLength = xesPubKeyProjOptionsLengthLimit[1]["userName"]
+                    </script>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="saveUserName">保存</button>
+                    </div>
+                </div>
+
+
+                性别
+                <div class="input-group mb-3">
+                    <label for="inp-gender"></label>
+                    <select class="custom-select" id="inp-gender">
+                        <option value="不愿透露" selected disabled>选择性别</option>
+                        <option value="不愿透露">不愿透露</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                        <option value="自定义">自定义(并非)</option>
+                        <option value="取消">取消</option>
+                        <!-- 取消的性别就是取消啊 -->
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="saveGender">保存</button>
+                    </div>
+                </div>
+
+
+                头像
+                <div class="mb-1 card card-body" style="width: fit-content; padding: 1rch">
+                    <img src="" alt="头像" id="userCurrentAvatar">
+                    <script>
+                        document.getElementById("userCurrentAvatar").src =
+                            "https://static0.xesimg.com/programme/assets/355ca5ebf40e81d10331293f6419adb3.jpg?x-oss-process="
+                                +idxOther_userAvatarXOssProcessParam
+                    </script>
+                </div>
+                <div class="input-group-sm">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inp-avatar-file"
+                               accept=".JPG,.PNG,.BMP,.GIF,.WebP,.TIFF,.HEIC,.AVIF">
+                        <label class="custom-file-label" for="inp-avatar-file">选择图片</label>
+                    </div>
+                </div>
+                <script>
+                    // 用户选择了文件后就能点击下面的按钮
+                    document.getElementById("inp-avatar-file").addEventListener("change", function() {
+                        if (document.getElementById("inp-avatar-file").files.length > 0) {
+                            document.getElementById("avatarInputBtn").disabled = false
+                        }
+                    })
+                </script>
+                <button class="btn btn-outline-info"
+                        type="button"
+                        style="margin-bottom: .5rch; margin-top: .5rch"
+                        id="avatarInputBtn" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" style="display: none"
+                          id="avatarInputSpinner"></span>
+                    生成预览图
+                </button>
+                <script>
+                    // 将文件上传到iframe
+                    document.getElementById("avatarInputBtn").addEventListener("click", function() {
+                        document.getElementById("avatarInputBtn").disabled = true
+                        document.getElementById("avatarInputSpinner").style.display = ""
+                        $("#avatarInputCollapsed").collapse("hide")
+                        document.getElementById("avatarUploadSucceed").style.display = "none"
+                        document.getElementById("avatarUploadFailed").style.display = "none"
+
+                        document.getElementById("iframeElement").contentWindow.postMessage(
+                            {
+                                "file": document.getElementById("inp-avatar-file").files[0],
+                                "XESChat": true
+                            },
+                            "https://code.xueersi.com"
+                        )
+                    })
+
+
+                    /** @type {Promise<UserInfoJson>} */
+                    let pubKeyOptions = (async function () {
+                        let opt = await xesPubKeyProjGetOption(localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID))
+                        if (opt === null) {
+                            opt = defaultUserInfo
+                        }
+                        return opt
+                    })()
+                    /** @type {Promise<string> | string} */
+                    let avatarFileName = (async function () {
+                        return (await pubKeyOptions)["userAvatarFileName"].toString()
+                    })()
+
+
+                    // iframe窗口上传完文件后展示预览图
+                    window.addEventListener("message", async function (event) {
+                        if (event.origin !== "https://code.xueersi.com") return
+                        if (typeof event.data !== "object") return
+                        if (!("XESChat" in event.data)) return
+
+                        if ("filename" in event.data) {
+                            let response = await fetch(
+                                "https://livefile.xesimg.com/programme/python_assets/"
+                                    + event.data["filename"]
+                                    + "?x-oss-process="
+                                    + idxOther_userAvatarXOssProcessParam
+                            )
+                            if (response.status === 200) {
+                                document.getElementById("avatarUploadSucceed").style.display = ""
+                                document.getElementById("avatarUploadSucceedImgPreview").src =
+                                    "https://livefile.xesimg.com/programme/python_assets/"
+                                        + event.data["filename"]
+                                        + "?x-oss-process="
+                                        + idxOther_userAvatarXOssProcessParam
+                                avatarFileName = event.data["filename"]
+                            } else {
+                                document.getElementById("avatarUploadFailed").style.display = ""
+                            }
+                            document.getElementById("avatarInputBtn").disabled = false
+                            document.getElementById("avatarInputSpinner").style.display = "none"
+                            await wait(100)
+                            $("#avatarInputCollapsed").collapse("show")
+                        } else if ("error" in event.data) {
+                            document.getElementById("avatarInputBtn").disabled = false
+                            document.getElementById("avatarInputSpinner").style.display = "none"
+                            document.getElementById("avatarUploadFailed").style.display = ""
+                            await wait(100)
+                            $("#avatarInputCollapsed").collapse("show")
+                        }
+                    })
+                </script>
+                <!-- 预览图展示 -->
+                <div class="collapse" id="avatarInputCollapsed">
+                    <div id="avatarUploadSucceed" style="display: none;">
+                        <div style="width: fit-content; padding: 1rch" class="mb-1 card card-body">
+                            <img src="" alt="头像" id="avatarUploadSucceedImgPreview">
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="saveAvatarFileHex">保存</button>
+                        </div>
+                    </div>
+                    <div id="avatarUploadFailed" style="display: none" class='card card-body'>
+                        上传失败, 请不要上传宽高超过30,000px, 总像素超过2.5亿px, 或大小超过20mb的图片
+                    </div>
+                </div>
+
+
+                <p class="mt-3 mb-0">个性签名</p>
+                <div class="input-group">
+                    <textarea class="form-control" aria-label="With textarea" maxlength="1"
+                              style="max-height: 32rch; height: 10rch; min-height: 10rch"
+                              id="inp-desc"></textarea>
+                    <script>
+                        document.getElementById("inp-desc").maxLength = xesPubKeyProjOptionsLengthLimit[1]["userDesc"]
+                    </script>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="saveDesc"
+                            style="margin-top: .5rch">保存</button>
+                </div>
+
+
+                <script>
+                    /**
+                     * @type {
+                     *     ([
+                     *         HTMLElement,
+                     *         function(): Promise<string>,
+                     *         "userName" | "userAvatarFileName" | "userGender" | "userDesc"
+                     *     ])[]
+                     * }
+                     */
+                    const formDct = [
+                        [
+                            document.getElementById("saveUserName"),
+                            async function () {return document.getElementById("inp-name").value},
+                            "userName"
+                        ], [
+                            document.getElementById("saveGender"),
+                            async function () {return document.getElementById("inp-gender").value},
+                            "userGender"
+                        ], [
+                            document.getElementById("saveAvatarFileHex"),
+                            async function () {return await avatarFileName},
+                            "userAvatarFileName"
+                        ], [
+                            document.getElementById("saveDesc"),
+                            async function () {return document.getElementById("inp-desc").value},
+                            "userDesc"
+                        ]
+                    ]
+                    pubKeyOptions.then(function (resolve) {
+                        formDct.map(function (value) {
+                            value[0].value = resolve[value[2]]
+                        })
+                        avatarFileName = resolve["userAvatarFileName"]
+                        document.getElementById("userCurrentAvatar").src =
+                            "https://static0.xesimg.com/programme/assets/"
+                                +avatarFileName
+                                +"?x-oss-process="
+                                +idxOther_userAvatarXOssProcessParam
+                    })
+                    formDct.map(function (value) {
+                        value[0].addEventListener("click", async function () {
+                            let opt = await pubKeyOptions
+                            let val = await value[1]()
+                            let key = value[2]
+                            opt[key] = val
+                            pubKeyOptions = (async () => opt)()
+                            if (
+                                val.length < xesPubKeyProjOptionsLengthLimit[0][key]
+                                    || val.length > xesPubKeyProjOptionsLengthLimit[1][key]
+                            ) {
+                                alert(`${userInfoTextMap[key]}的长度必须在${xesPubKeyProjOptionsLengthLimit[0][key]}字符到${xesPubKeyProjOptionsLengthLimit[1][key]}字符之间`)
+                            } else {
+                                await xesPubKeyProjSetOption(await pubKeyOptions)
+                            }
+                        })
+                    })
+                </script>
+            </form>
+            <!-- 头像上传: ?x-oss-process=<idxOther_userAvatarXOssProcessParam> -->
+        </div>
+        <div class="card card-body">
+            <h5 class="card-title">
+                用户需知
+            </h5>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
+                <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
+            </svg> 不要使用技术手段发送大量消息. 大量非法的消息虽然不会显示, 但也是会对其他人造成一些影响的. 也不要试着用技术手段突破用户名、个签长度等限制
+
+            <br>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-slash" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M13.879 10.414a2.501 2.501 0 0 0-3.465 3.465l3.465-3.465Zm.707.707-3.465 3.465a2.501 2.501 0 0 0 3.465-3.465Zm-4.56-1.096a3.5 3.5 0 1 1 4.949 4.95 3.5 3.5 0 0 1-4.95-4.95ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+            </svg> 非必要情况下不要在学而思发XES Chat的下载链接. 因为社管会一直视奸你...
+
+            <br>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-kiss" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M12.493 13.368a7 7 0 1 1 2.489-4.858c.344.033.68.147.975.328a8 8 0 1 0-2.654 5.152 8.58 8.58 0 0 1-.81-.622Zm-3.731-3.22a13 13 0 0 0-1.107.318.5.5 0 1 1-.31-.95c.38-.125.802-.254 1.192-.343.37-.086.78-.153 1.103-.108.16.022.394.085.561.286.188.226.187.497.131.705a1.892 1.892 0 0 1-.31.593c-.077.107-.168.22-.275.343.107.124.199.24.276.347.142.197.256.397.31.595.055.208.056.479-.132.706-.168.2-.404.262-.563.284-.323.043-.733-.027-1.102-.113a14.87 14.87 0 0 1-1.191-.345.5.5 0 1 1 .31-.95c.371.12.761.24 1.109.321.176.041.325.069.446.084a5.609 5.609 0 0 0-.502-.584.5.5 0 0 1 .002-.695 5.52 5.52 0 0 0 .5-.577 4.465 4.465 0 0 0-.448.082Zm.766-.087-.003-.001-.003-.001c.004 0 .006.002.006.002Zm.002 1.867-.006.001a.038.038 0 0 1 .006-.002ZM6 8c.552 0 1-.672 1-1.5S6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8Zm2.757-.563a.5.5 0 0 0 .68-.194.934.934 0 0 1 .813-.493c.339 0 .645.19.813.493a.5.5 0 0 0 .874-.486A1.934 1.934 0 0 0 10.25 5.75c-.73 0-1.356.412-1.687 1.007a.5.5 0 0 0 .194.68ZM14 9.828c1.11-1.14 3.884.856 0 3.422-3.884-2.566-1.11-4.562 0-3.421Z"/>
+            </svg> 在群里发送敏感信息请确认群聊已经设置密码
+
+            <br>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg> 其他登录了你的学而思账号的人能访问你的XES Chat账号, 但无法查看需要密码的聊天.
+
+            <br>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+            </svg> 遇到傻逼屏蔽即可
+        </div>
+    </div>
+</div></body>
+</html>

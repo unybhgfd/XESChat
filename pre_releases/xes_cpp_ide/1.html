@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="../../bootstrap.min.css">
+    <script src="../../jquery-3.3.1.slim.min.js"></script>
+    <script src="../../popper.min.js"></script>
+    <script src="../../bootstrap.min.js"></script>
+
+    <script src="../../buffer.min.js"></script>
+    <script src="../../ecpair.min.js"></script>
+    <script src="../../crypto.min.js"></script>
+    <script src="../../configs.js"></script>
+    <script src="../../project_check.js"></script>
+
+    <title>XESChat - 登录</title>
+</head>
+<body><div class="container">
+    <br>
+    <h2 class="row justify-content-center">登录XES CHAT</h2>
+    <p class="roe" style="text-align: center">正在自动登录, 登录后将自动跳转到首页</p>
+
+    <script>
+        (async function() {
+            mainBlock: {
+                let keyPair
+                secKeyBlock: {
+                    let haveLocalSecKey = false
+                    if (
+                        localStorage.getItem(idxLS_XES_SEC_KEY_WIF) !== null
+                    ) {
+                        // 本地有私钥
+                        try {
+                            keyPair = ECPair.ECPair.fromWIF(localStorage.getItem(idxLS_XES_SEC_KEY_WIF))
+                            haveLocalSecKey = true
+                        } catch (e) {
+                            console.log("从本地导入私钥失败", e)
+                        }
+                    }
+                    // 本地无私钥
+
+                    let search_result = await xesCppProjSearchOwnByName(idxName_secKeyProjName)
+                    if (search_result !== null) {
+                        // 有搜到私钥作品
+                        try {
+                            keyPair = ECPair.ECPair.fromWIF(await wifAesHexDecrypt(
+                                xesSecKeyProjectGetWifAesHex(await xesProjectView(search_result))))
+                        } catch (e) {
+                            console.log("从私钥作品导入私钥失败", e)
+                            if (!haveLocalSecKey) {
+                                keyPair = ECPair.ECPair.makeRandom()
+                            }
+                            localStorage.setItem(idxLS_XES_SEC_KEY_WIF, keyPair.toWIF())
+                            await xesSecKeyProjSetWif(search_result)
+                        }
+                        break secKeyBlock
+                    }
+                    // 没有搜到私钥作品
+                    if (!haveLocalSecKey) {
+                        keyPair = ECPair.ECPair.makeRandom()
+                    }
+                    console.log("需要新建私钥作品")
+                    try {
+                        await xesSecKeyProjCreate(await genWifAesHex())
+                    } catch (e) {
+                        console.assert(e["status_code"] === 400)
+                        break mainBlock
+                    }
+                }
+                localStorage.setItem(idxLS_XES_SEC_KEY_WIF, keyPair.toWIF())
+
+
+                const pubKeyHex = keyPair.publicKey.toString("hex")
+                if ((
+                    localStorage.getItem(idxLS_XES_PUBKEY_HEX) !== null
+                ) && (
+                    localStorage.getItem(idxLS_XES_PUBKEY_HEX) !== pubKeyHex
+                )) {
+                    console.log("本地公钥不匹配私钥!")
+                }
+                localStorage.setItem(idxLS_XES_PUBKEY_HEX, pubKeyHex)
+
+                let pubKeyProjId
+                if (localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID) === null) {
+                    let search_result = await xesCppProjSearchOwnByName(idxName_pubKeyProjName)
+                    if (search_result === null) {
+                        try {
+                            pubKeyProjId = await xesPubKeyProjCreate(localStorage.getItem(idxLS_XES_PUBKEY_HEX))
+                        } catch (e) {
+                            console.assert(e["status_code"] === 400)
+                            break mainBlock
+                        }
+                    } else {
+                        pubKeyProjId = search_result.toString()
+                    }
+                    localStorage.setItem(idxLS_XES_PUBKEY_PROJ_ID, pubKeyProjId)
+                } else {
+                    pubKeyProjId = localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID)
+                }
+                if (xesPubKeyProjectGetKey(await xesProjectView(pubKeyProjId)) !== pubKeyHex) {
+                    await xesPubKeyProjSetPubKey(pubKeyHex)
+                }
+                window.location = "/xes%20chat"
+                return
+            }
+            // TODO: 显示'当日创作作品数已达上限:5'的提示
+            window.alert("抱歉, 当日创作作品数已达上限, 请在明天重新登录")
+            window.alert("抱歉, 当日创作作品数已达上限, 请在明天重新登录")
+            window.alert("抱歉, 当日创作作品数已达上限, 请在明天重新登录")
+        })()
+    </script>
+
+    <br><br><hr>
+    <ul class="row nav justify-content-center">
+        <li class="nav-item">
+            <a class="nav-link disabled" href="/xes chat">主页</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" href="/ide/code/1?xes_chat=true">登录</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" href="/xes chat/account">账号管理</a>
+        </li>
+    </ul>
+</div></body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>uploader</title>
+<!--    <script src="../../spark-md5.min.js"></script>-->
+    <script src="https://livefile.xesimg.com/programme/python_assets/72b9c82c626d0b7091c0a9b71c0d394c.js"></script>
+</head>
+<body>
+    uploader
+    <iframe id="uploaderIframe" src="https://xueersifile.oss-cn-beijing.aliyuncs.com/?xes_chat=true"
+            style="border: 0" title="uploader" width="0" height="0"
+            sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
+    <script>
+        // 应该接收一个file对象, 上传完成后给父窗口发送oss文件名(string)
+        // 如: https://livefile.xesimg.com/programme/python_assets/c0ac2b6e95d2887cb18b980aba8763c2.txt
+        // 返回: c0ac2b6e95d2887cb18b980aba8763c2.txt
+        // 有文件大小限制, 建议最多传10gb左右
+        let parentOrigin = ""
+        let parentWindow = false
+        window.addEventListener("message", async function(event) {
+            if (!event.data["XESChat"]) return
+            try {
+                if (event.source.window === document.getElementById("uploaderIframe").contentWindow && event.data["XESChat"]) {
+                    // 从iframe传过来的消息
+                    if (parentOrigin) {
+                        parentWindow.postMessage(
+                            event.data,
+                            parentOrigin
+                        )
+                    } else {
+                        window.parent.postMessage(
+                            event.data,
+                            "http://localhost:63342"
+                        )
+                        window.parent.postMessage(
+                            event.data,
+                            "https://code.xueersi.com"
+                        )
+                    }
+                } else if(event.data["file"]) {
+                    const file = event.data["file"]
+                    let fileUUID = ""
+                    if (event.data["uuid"]) {
+                        fileUUID = event.data["uuid"]
+                    }
+                    const CHUNK_SIZE = 1024 * 1024 * 128 // 每次读128mb
+                    const spark = new SparkMD5.ArrayBuffer()
+                    let offset = 0
+                    const calcMd5 = () => {
+                        const slice = file.slice(offset, offset + CHUNK_SIZE)
+                        const reader = new FileReader()
+                        reader.onload = e => {
+                            const chunk = e.target.result
+                            spark.append(chunk)
+                            offset += CHUNK_SIZE
+                            if (offset < file.size) {
+                                calcMd5()
+                            } else {
+                                const md5 = spark.end() // 不带0x的hex string
+                                parentOrigin = event.origin
+                                parentWindow = event.source.window
+                                getUploadParam(md5)
+                            }
+                        }
+                        reader.readAsArrayBuffer(slice)
+                    }
+                    calcMd5()
+                    const getUploadParam = async function (md5) {
+                        let param = await fetch(
+                            "https://code.xueersi.com/api/assets/get_oss_upload_params"
+                                + "?scene=offline_python_assets"
+                                + "&md5=" + md5
+                                + "&filename=" + encodeURIComponent(
+                                    "C:\\Users\\WIN10\\Downloads\\" + file.name
+                                ),
+                            {
+                                method: "GET",
+                                cache: "no-cache",
+                                headers: {
+                                    "Authorization": "e7e380401dc9a31fce2117a60c99ba04"
+                                }
+                            }
+                        )
+                        param = await param.json()
+                        // host: xueersifile.oss-cn-beijing.aliyuncs.com
+                        let url = param["data"]["url"]
+                        if (param["status"] !== 1
+                            || param["data"]["host"].slice(0, 72) !==
+                                "https://xueersifile.oss-cn-beijing.aliyuncs.com/programme/python_assets/"
+                            || url.slice(0, 52) !== 'https://livefile.xesimg.com/programme/python_assets/') {
+                            console.error("上传失败", param)
+                            parentWindow.postMessage(
+                                {'XESChat': true, "error": true},
+                                parentOrigin
+                            )
+                        } else {
+                            parentWindow.postMessage(
+                                {
+                                    "XESChat": true,
+                                    "filenamePreview": url.slice(52),
+                                    "uuid": fileUUID
+                                },
+                                parentOrigin
+                            )
+                            document.getElementById("uploaderIframe").contentWindow.postMessage(
+                                [
+                                    file,
+                                    param["data"],
+                                    fileUUID
+                                ],
+                                "https://xueersifile.oss-cn-beijing.aliyuncs.com"
+                            )
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("上传失败", e)
+                event.source.window.postMessage(
+                    {'XESChat': true, "error": e},
+                    event.origin
+                )
+            }
+        }, false)
+    </script>
+</body>
+</html>

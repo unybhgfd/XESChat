@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--bootstrap.min.css-->
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <script src="./jquery-3.3.1.slim.min.js"></script>
+    <script src="./popper.min.js"></script>
+    <!--bootstrap.min.js-->
+    <script src="./bootstrap.min.js"></script>
+
+    <title>XES chat - uploader</title>
+</head>
+<body><div class="container">
+    <iframe id="iframeElement" src="https://code.xueersi.com/xes%20chat/uploader"
+            style="border: 0" title="uploader" width="0" height="0"
+            sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
+    <div class="input-group-sm">
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="inp-avatar-file">
+            <label class="custom-file-label" for="inp-avatar-file">选择文件</label>
+        </div>
+    </div>
+    <script>
+        // 生成随机uuid
+        function generateUUID() {
+            let s = [];
+            const hexDigits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            for (let i = 0; i < 36; i++) {
+                s[i] = hexDigits[Math.floor(Math.random() * 0x10)]
+            }
+            s[14] = "4"
+            s[19] = hexDigits[(s[19] & 0x3) | 0x8]
+            s[8] = s[13] = s[18] = s[23] = "-"
+            return s.join("")
+        }
+
+        window.addEventListener("message", function(event) {
+            if (event.origin !== "https://code.xueersi.com") return
+            if (typeof event.data !== "object") return
+            if (!("XESChat" in event.data)) return
+            if ("filename" in event.data) {
+                console.log("上传成功")
+                console.log("oss文件名", event.data["filename"])
+                console.log("文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filename"])
+                console.log("文件uuid(本地)", event.data["uuid"])
+            } else if ("error" in event.data) {
+                console.log("上传失败")
+                if (event.data["error"] !== true) {
+                    console.log("失败原因", event.data["error"])
+                }
+            } else if ("filenamePreview" in event.data) {
+                console.log("已获取oss文件名, 但文件尚在上传中")
+                console.log("oss文件名", event.data["filenamePreview"])
+                console.log("文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filenamePreview"])
+                console.log("文件uuid(本地)", event.data["uuid"])
+            } else {
+                console.error("非法消息", event)
+            }
+        })
+
+        document.getElementById("inp-avatar-file").addEventListener("change", function() {
+            let uuid = generateUUID()
+            let f = document.getElementById("inp-avatar-file").files[0]
+            document.getElementById("iframeElement").contentWindow.postMessage(
+                {
+                    "file": f,
+                    "uuid": uuid, // 可以不设置, 默认为空字符串
+                    "XESChat": true
+                },
+                "https://code.xueersi.com"
+            )
+            console.log("文件uuid(本地)", uuid)
+        })
+    </script>
+</div></body>
+</html>
