@@ -75,7 +75,7 @@
                     <img src="" alt="头像" id="userCurrentAvatar">
                     <script>
                         document.getElementById("userCurrentAvatar").src =
-                            "https://static0.xesimg.com/programme/assets/355ca5ebf40e81d10331293f6419adb3.jpg?x-oss-process="
+                            "https://livefile.xesimg.com/programme/python_assets/355ca5ebf40e81d10331293f6419adb3.jpg?x-oss-process="
                                 +idxOther_userAvatarXOssProcessParam
                     </script>
                 </div>
@@ -217,28 +217,34 @@
                         [
                             document.getElementById("saveUserName"),
                             async function () {return document.getElementById("inp-name").value},
-                            "userName"
+                            "userName",
+                            document.getElementById("inp-name")
                         ], [
                             document.getElementById("saveGender"),
                             async function () {return document.getElementById("inp-gender").value},
-                            "userGender"
+                            "userGender",
+                            document.getElementById("inp-gender")
                         ], [
                             document.getElementById("saveAvatarFileHex"),
                             async function () {return await avatarFileName},
-                            "userAvatarFileName"
+                            "userAvatarFileName",
+                            {}
                         ], [
                             document.getElementById("saveDesc"),
                             async function () {return document.getElementById("inp-desc").value},
-                            "userDesc"
+                            "userDesc",
+                            document.getElementById("inp-desc")
                         ]
                     ]
                     pubKeyOptions.then(function (resolve) {
                         formDct.map(function (value) {
-                            value[0].value = resolve[value[2]]
+                            if (value[2] !== "userAvatarFileName") {
+                                value[3].value = resolve[value[2]]
+                            }
                         })
                         avatarFileName = resolve["userAvatarFileName"]
                         document.getElementById("userCurrentAvatar").src =
-                            "https://static0.xesimg.com/programme/assets/"
+                            "https://livefile.xesimg.com/programme/python_assets/"
                                 +avatarFileName
                                 +"?x-oss-process="
                                 +idxOther_userAvatarXOssProcessParam
