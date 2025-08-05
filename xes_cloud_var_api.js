@@ -1,3 +1,12 @@
+/**
+ * requires: 无
+ */
+
+
+/**
+ * 学而思云变量
+ * 已删除不安全的方法
+ */
 class XesWsCloudVar {
     /**
      * @callback XesWsCloudVarCallback
@@ -65,26 +74,4 @@ class XesWsCloudVar {
             }
         ))
     }
-
-    // sendVar(var_name, value = 1) {
-    //     this.socket.send(JSON.stringify(
-    //         {
-    //             "method": "set", "user": this.user_id, "project_id": this.project_id,
-    //             "name": "\u2601 " + var_name, "value": value
-    //         }
-    //     ))
-    // }
-    //
-    // rankVar(var_name) {
-    //     this.socket.send(JSON.stringify(
-    //         {"method": "ranking", "user": this.user_id, "project_id": this.project_id,
-    //             "name": "\u2601 "+var_name, "value": 52568}
-    //     ))
-    // }
-    //
-    // delVar(var_name) {
-    //     this.socket.send(JSON.stringify(
-    //         {"method": "delete", "user": this.user_id, "project_id": this.project_id, "name": "\u2601 "+var_name}
-    //     ))
-    // }
 }
