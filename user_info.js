@@ -2,6 +2,7 @@
  * requires: project_check.js
  */
 
+
 /**
  * @typedef {object} UserInfoJson
  @property {string} userName

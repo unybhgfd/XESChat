@@ -1,4 +1,10 @@
+/**
+ * requires: 无
+ */
+
+
 // node导出js: npx browserify -r bigi -s bigi -p esmify > bigi.min.js
+/** 将cookie解码为json */
 function cookieToJson(){
     let cookie_text = document.cookie;
     let arr = [];
