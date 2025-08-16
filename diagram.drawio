@@ -388,23 +388,29 @@
         <mxCell id="H96E7y6IG59dgLwb0Voc-4" value="" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
           <mxGeometry x="540" y="545" width="48" height="48" as="geometry" />
         </mxCell>
+        <mxCell id="H96E7y6IG59dgLwb0Voc-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" edge="1" parent="kA3QzVCFTja8NUtXptVE-152" source="H96E7y6IG59dgLwb0Voc-6" target="H96E7y6IG59dgLwb0Voc-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-6" value="类型: 聊天室信息" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
-          <mxGeometry x="1148" y="697" width="140" height="104" as="geometry" />
+          <mxGeometry x="1148" y="697" width="140" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="H96E7y6IG59dgLwb0Voc-7" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="H96E7y6IG59dgLwb0Voc-6">
+        <mxCell id="H96E7y6IG59dgLwb0Voc-7" value="聊天室名" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="H96E7y6IG59dgLwb0Voc-6">
           <mxGeometry y="26" width="140" height="26" as="geometry" />
-        </mxCell>
-        <mxCell id="H96E7y6IG59dgLwb0Voc-8" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="H96E7y6IG59dgLwb0Voc-6">
-          <mxGeometry y="52" width="140" height="26" as="geometry" />
-        </mxCell>
-        <mxCell id="H96E7y6IG59dgLwb0Voc-9" value="+ field: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="H96E7y6IG59dgLwb0Voc-6">
-          <mxGeometry y="78" width="140" height="26" as="geometry" />
         </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="kA3QzVCFTja8NUtXptVE-152" source="H96E7y6IG59dgLwb0Voc-10" target="9sGCfyWkoXdZDg2rzQ4G-20">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="kA3QzVCFTja8NUtXptVE-152" source="9sGCfyWkoXdZDg2rzQ4G-13" target="9sGCfyWkoXdZDg2rzQ4G-20">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H96E7y6IG59dgLwb0Voc-19" value="签名必须为群主公钥id" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
+          <mxGeometry x="1168" y="865" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="H96E7y6IG59dgLwb0Voc-23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" edge="1" parent="kA3QzVCFTja8NUtXptVE-152" source="H96E7y6IG59dgLwb0Voc-22" target="H96E7y6IG59dgLwb0Voc-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H96E7y6IG59dgLwb0Voc-22" value="更晚的消息覆盖更早的消息" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
+          <mxGeometry x="1360" y="865" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

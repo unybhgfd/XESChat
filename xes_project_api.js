@@ -212,8 +212,11 @@ async function xesCppProjSearchOwnByName(projName) {
  *   @config {number} data.total 总数
  */
 
-/** 获取 评论/回复 列表 */
-async function xesCppProjCommentReplyListApi(topicId, parentId, page, perPage) {
+/**
+ * 获取 评论/回复 列表
+ * @private
+ */
+async function _xesCppProjCommentReplyListApi(topicId, parentId, page, perPage) {
     const response = await fetch(
         `https://code.xueersi.com/api/comments?appid=1001108&topic_id=${topicId}`
             +`&parent_id=${parentId.toString()}&order_type=&page=${page.toString()}&per_page=${perPage.toString()}`,
@@ -238,11 +241,73 @@ async function xesCppProjCommentReplyListApi(topicId, parentId, page, perPage) {
  * @param {ProjData} projData
  * @param {number | string} page 从1开始计数
  * @param {number | string} perPage
+ * @returns {Promise<XesCppProjCommentReplyListData>}
  */
 async function xesCppProjGetCommentList(projData, page, perPage) {
-    return await xesCppProjCommentReplyListApi(projData.data.topic_id, 0, page, perPage)
+    return await _xesCppProjCommentReplyListApi(projData.data.topic_id, 0, page, perPage)
 }
 
+/**
+ * 获取回复列表
+ * @param projData
+ * @param {number | string} commentId XesCppProjCommentOrReplyData的id属性
+ * @param page 从1开始计数
+ * @param perPage
+ * @returns {Promise<XesCppProjCommentReplyListData>}
+ */
 async function xesCppProjGetReplyList(projData, commentId, page, perPage) {
-    return await xesCppProjCommentReplyListApi(projData.data.topic_id, commentId, page, perPage)
+    return await _xesCppProjCommentReplyListApi(projData.data.topic_id, commentId, page, perPage)
+}
+
+/**
+ * @param {string} topidId
+ * @param {number} targetId
+ * @param {string} content
+ * @returns {Promise<number>}
+ * @private
+ */
+async function _xesCppProjSendCommentReplyApi(topidId, targetId, content) {
+    const response = await fetch(
+        "https://code.xueersi.com/api/comments/submit",
+        {
+            method: "POST",
+            cache: "no-cache",
+            redirect: "error",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "appid": 1001108,
+                "topic_id": topidId,
+                "target_id": targetId,
+                "content": content
+            }),
+        }
+    )
+    let resp_data = await response.json()
+    if (resp_data["status"] !== 1) {
+        throw resp_data
+    }
+    return resp_data["data"]["id"]
+}
+
+/**
+ * 发送评论
+ * @param {ProjData} projData
+ * @param {string} content 评论内容
+ * @returns {Promise<number>} 评论id
+ */
+async function xesCppProjSendComment(projData, content) {
+    return await _xesCppProjSendCommentReplyApi(projData.data.topic_id, 0, content)
+}
+
+/**
+ * 发送回复
+ * @param {ProjData} projData
+ * @param {number} commentId
+ * @param {string} content
+ * @returns {Promise<number>}
+ */
+async function xesCppProjSendReply(projData, commentId, content) {
+    return await _xesCppProjSendCommentReplyApi(projData.data.topic_id, commentId, content)
 }
