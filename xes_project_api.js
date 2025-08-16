@@ -9,9 +9,9 @@
  * @property {Number} status 正常情况下为1
  * @property {String} msg
  * @property {object} data 里面的xml是
- * @config {string} data.xml 作品内容(即代码)
- * @config {string} data.user_id
- * @config {string} data.topic_id
+ *   @config {string} data.xml 作品内容(即代码)
+ *   @config {string} data.user_id
+ *   @config {string} data.topic_id
  */
 
 /**
@@ -185,38 +185,64 @@ async function xesCppProjSearchOwnByName(projName) {
     return search_result;
 }
 
-
 /**
- * @typedef {Object} _XesProjCommentData
- * 单个评论内容
- * @property {boolean} can_delete 有无删除的权限
- * @property {string} content 评论内容
- * @property {string} created_at 发布时间, 格式为"YYYY-MM-DD hh:mm::ss"
- * @property {number} id 评论id
- * @property {number} replies 回复数量
- * @property {string} user_id 用户id, 一般是string化的number
- * @property {object} reply_list 回复
- * @config {number} reply_list.total 回复总数
- * @config {boolean} reply_list.hasMore (Deprecated)
- * @config {object[]} data (Deprecated)
+ * @typedef XesCppProjCommentOrReplyData
+ * @param {number} id 评论/回复 id
+ * @param {string} topic_id
+ * @param {0 | number} parent_id 该回复所在的评论id, 若是评论则为0
+ * @param {0 | number} target_id 该回复的目标评论(或回复)id, 若是评论则为0
+ * @param {string} user_id 评论/回复 的发布者用户id
+ * @param {string} reply_user_id TODO: 这是干嘛的
+ * @param {string} content 评论/回复 内容
+ * @param {number} replies 回复数
+ * @param {0 | 1} removed 是否被学而思管理删除
+ * @param {string} created_at 评论/回复 的创建时间, 格式为: "YYYY-MM-DD hh:mm:ss"
+ * @param {boolean} can_delete 有无删除的权限
  */
 
 /**
- * @typedef XesProjCommentListData
+ * @typedef XesCppProjCommentReplyListData
  * 评论列表
  * @property {string} msg
- * @property {number} stat (Deprecated)和status相同
  * @property {number} status 正常情况下为1
  * @property {Object} data
- *   @config {string} data.page string化的number
+ *   @config {string} data.page string化的number, 从1开始计数
  *   @config {string} data.per_page string化的number
- *   @config {_XesProjCommentData[]} data.data
+ *   @config {XesCppProjCommentOrReplyData[]} data.data
+ *   @config {number} data.total 总数
  */
 
+/** 获取 评论/回复 列表 */
+async function xesCppProjCommentReplyListApi(topicId, parentId, page, perPage) {
+    const response = await fetch(
+        `https://code.xueersi.com/api/comments?appid=1001108&topic_id=${topicId}`
+            +`&parent_id=${parentId.toString()}&order_type=&page=${page.toString()}&per_page=${perPage.toString()}`,
+        {
+            method: "GET",
+            cache: "no-cache",
+            redirect: "error",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        }
+    )
+    let resp_data = await response.json()
+    if (resp_data["status"] !== 1) {
+        throw resp_data
+    }
+    return resp_data
+}
+
 /**
+ * 获取评论列表
  * @param {ProjData} projData
- * @returns {Promise<void>}
+ * @param {number | string} page 从1开始计数
+ * @param {number | string} perPage
  */
-async function xesCppProjGetCommentList(projData){
-    // TODO
+async function xesCppProjGetCommentList(projData, page, perPage) {
+    return await xesCppProjCommentReplyListApi(projData.data.topic_id, 0, page, perPage)
+}
+
+async function xesCppProjGetReplyList(projData, commentId, page, perPage) {
+    return await xesCppProjCommentReplyListApi(projData.data.topic_id, commentId, page, perPage)
 }
