@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0" version="28.1.0">
   <diagram name="第 1 页" id="Tok3xOCYxD7B_LSYUCv_">
-    <mxGraphModel dx="2245" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2495" dy="934" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -276,7 +276,7 @@
           <mxGeometry x="990" y="27" width="110" height="50" as="geometry" />
         </mxCell>
         <mxCell id="kA3QzVCFTja8NUtXptVE-191" value="聊天室信息(json)" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="kA3QzVCFTja8NUtXptVE-152" vertex="1">
-          <mxGeometry x="1160" y="113" width="140" height="130" as="geometry" />
+          <mxGeometry x="1102" y="77" width="140" height="130" as="geometry" />
         </mxCell>
         <mxCell id="kA3QzVCFTja8NUtXptVE-192" value="名称" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="kA3QzVCFTja8NUtXptVE-191" vertex="1">
           <mxGeometry y="26" width="140" height="26" as="geometry" />
@@ -302,7 +302,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="kA3QzVCFTja8NUtXptVE-211" value="连接字符串" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="kA3QzVCFTja8NUtXptVE-152" vertex="1">
-          <mxGeometry x="765" y="177" width="140" height="156" as="geometry" />
+          <mxGeometry x="765" y="117" width="140" height="156" as="geometry" />
         </mxCell>
         <mxCell id="kA3QzVCFTja8NUtXptVE-212" value="随机4字符hex字符串" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="kA3QzVCFTja8NUtXptVE-211" vertex="1">
           <mxGeometry y="26" width="140" height="26" as="geometry" />
@@ -386,7 +386,7 @@
           <mxGeometry x="1194" y="444" width="48" height="48" as="geometry" />
         </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-4" value="" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
-          <mxGeometry x="540" y="545" width="48" height="48" as="geometry" />
+          <mxGeometry x="870" y="444" width="48" height="48" as="geometry" />
         </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" edge="1" parent="kA3QzVCFTja8NUtXptVE-152" source="H96E7y6IG59dgLwb0Voc-6" target="H96E7y6IG59dgLwb0Voc-19">
           <mxGeometry relative="1" as="geometry" />
@@ -404,13 +404,22 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-19" value="签名必须为群主公钥id" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
-          <mxGeometry x="1168" y="865" width="120" height="60" as="geometry" />
+          <mxGeometry x="1370" y="693" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;" edge="1" parent="kA3QzVCFTja8NUtXptVE-152" source="H96E7y6IG59dgLwb0Voc-22" target="H96E7y6IG59dgLwb0Voc-19">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="H96E7y6IG59dgLwb0Voc-22" value="更晚的消息覆盖更早的消息" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
-          <mxGeometry x="1360" y="865" width="120" height="60" as="geometry" />
+          <mxGeometry x="1530" y="693" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="H96E7y6IG59dgLwb0Voc-27" value="到了一定数量要到下一个云变量" style="shape=note2;boundedLbl=1;whiteSpace=wrap;html=1;size=25;verticalAlign=top;align=center;" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
+          <mxGeometry x="1028" y="267" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="H96E7y6IG59dgLwb0Voc-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=120;entryDy=42.5;entryPerimeter=0;" edge="1" parent="kA3QzVCFTja8NUtXptVE-152" source="kA3QzVCFTja8NUtXptVE-228" target="H96E7y6IG59dgLwb0Voc-27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="H96E7y6IG59dgLwb0Voc-29" value="TODO" style="html=1;whiteSpace=wrap;fontSize=32;fontFamily=Lucida Console;horizontal=1;fontStyle=1" vertex="1" parent="kA3QzVCFTja8NUtXptVE-152">
+          <mxGeometry x="839" y="467" width="110" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

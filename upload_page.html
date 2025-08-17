@@ -42,19 +42,21 @@
             if (!("XESChat" in event.data)) return
             if ("filename" in event.data) {
                 console.log("上传成功")
-                console.log("oss文件名", event.data["filename"])
-                console.log("文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filename"])
-                console.log("文件uuid(本地)", event.data["uuid"])
+                console.log("    oss文件名", event.data["filename"])
+                console.log("    文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filename"])
+                console.log("    文件uuid(本地)", event.data["uuid"])
             } else if ("error" in event.data) {
                 console.log("上传失败")
                 if (event.data["error"] !== true) {
-                    console.log("失败原因", event.data["error"])
+                    console.log("    失败原因", event.data["error"])
                 }
             } else if ("filenamePreview" in event.data) {
                 console.log("已获取oss文件名, 但文件尚在上传中")
-                console.log("oss文件名", event.data["filenamePreview"])
-                console.log("文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filenamePreview"])
-                console.log("文件uuid(本地)", event.data["uuid"])
+                console.log("    oss文件名", event.data["filenamePreview"])
+                console.log("    文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filenamePreview"])
+                console.log("    文件uuid(本地)", event.data["uuid"])
+            } else if ("ready" in event.data) {
+                console.log("uploader已就绪")
             } else {
                 console.error("非法消息", event)
             }

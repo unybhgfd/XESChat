@@ -3,19 +3,31 @@
  */
 
 
+// TODO: 把这个狗屎改了, 看着不顺眼啊
+
 /** 简单的字符串uploader, 无需跨域 */
 class XesOssMsgUploader {
-    #filename
-    constructor() {
-        this.#filename = "xesChatMessage" + Date.now().toString() + "_" + COOKIE["stu_id"] + "_"
+    constructor() {}
+
+    /**
+     * 生成随机文件名, 应该立即使用
+     * @returns {string}
+     */
+    static getFilename() {
+        const hexDigits = "0123456789abcdefghijklmnopqrstuvwxyz"
+        let s = []
+        for (let i = 0; i < 9; i++) {
+            s[i] = hexDigits[Math.floor(Math.random() * 0x10)]
+        }
+        s[4] = "."
+        return s.join('') + "_" + Date.now().toString()
     }
 
     async #getParams(md5) {
         let xhr = new XMLHttpRequest()
         xhr.open("GET", "https://code.xueersi.com/api/assets/v2/get_tss_upload_params"
                                     + "?scene=offline_python_assets"
-                                    + `&md5=${md5}&filename=${this.#filename + Date.now().toString()
-                                                              + ".xeschatmsg"}`)
+                                    + `&md5=${md5}&filename=${XesOssMsgUploader.getFilename()}`)
         xhr.send()
         while (xhr.readyState !== XMLHttpRequest.DONE) {await wait(100)}
         return JSON.parse(xhr.responseText)

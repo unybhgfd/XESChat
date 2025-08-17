@@ -1,5 +1,5 @@
 /**
- * requires: TODO
+ * requires: 无
  */
 
 
@@ -260,13 +260,13 @@ async function xesCppProjGetReplyList(projData, commentId, page, perPage) {
 }
 
 /**
- * @param {string} topidId
+ * @param {string} topicId
  * @param {number} targetId
  * @param {string} content
  * @returns {Promise<number>}
  * @private
  */
-async function _xesCppProjSendCommentReplyApi(topidId, targetId, content) {
+async function _xesCppProjSendCommentReplyApi(topicId, targetId, content) {
     const response = await fetch(
         "https://code.xueersi.com/api/comments/submit",
         {
@@ -278,7 +278,7 @@ async function _xesCppProjSendCommentReplyApi(topidId, targetId, content) {
             },
             body: JSON.stringify({
                 "appid": 1001108,
-                "topic_id": topidId,
+                "topic_id": topicId,
                 "target_id": targetId,
                 "content": content
             }),
@@ -310,4 +310,33 @@ async function xesCppProjSendComment(projData, content) {
  */
 async function xesCppProjSendReply(projData, commentId, content) {
     return await _xesCppProjSendCommentReplyApi(projData.data.topic_id, commentId, content)
+}
+
+/**
+ * 删除 评论/回复
+ * @param {ProjData} projData
+ * @param {number} targetId id
+ * @returns {Promise<void>}
+ */
+async function xesCppProjDelCommentReply(projData, targetId) {
+    const response = await fetch(
+        "https://code.xueersi.com/api/comments/delete",
+        {
+            method: "POST",
+            cache: "no-cache",
+            redirect: "error",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "appid": 1001108,
+                "topic_id": projData.data.topic_id,
+                "id": targetId
+            }),
+        }
+    )
+    let resp_data = await response.json()
+    if (resp_data["status"] !== 1) {
+        throw resp_data
+    }
 }
