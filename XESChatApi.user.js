@@ -20,7 +20,7 @@ const path_map = {
         "/xes%20chat": "https://livefile.xesimg.com/programme/python_assets/b8a926d403cccc43da7c7083cea745aa.html",
         "/xes%20chat/upload%20test": "https://livefile.xesimg.com/programme/python_assets/dfbcdfe15f53f7454a7c5f47c30de7de.html",
         "/ide/code/1": "https://livefile.xesimg.com/programme/python_assets/984f3389399dcd3bdf042e393f117d3d.html",
-        "/xes%20chat/uploader": "https://livefile.xesimg.com/programme/python_assets/fb74f6b9599f51471559bd12642c8ac2.html",
+        "/xes%20chat/uploader_api": "https://livefile.xesimg.com/programme/python_assets/fb74f6b9599f51471559bd12642c8ac2.html",
     },
     "https://xueersifile.oss-cn-beijing.aliyuncs.com": {
         "/": "https://livefile.xesimg.com/programme/python_assets/e03b2de68558fac614bf3078e892cfe7.html",

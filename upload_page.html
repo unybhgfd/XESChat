@@ -13,7 +13,7 @@
     <title>XES chat - uploader</title>
 </head>
 <body><div class="container">
-    <iframe id="iframeElement" src="https://code.xueersi.com/xes%20chat/uploader"
+    <iframe id="iframeElement" src="https://code.xueersi.com/xes%20chat/uploader_api"
             style="border: 0" title="uploader" width="0" height="0"
             sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
     <div class="input-group-sm">
@@ -57,6 +57,9 @@
                 console.log("    文件uuid(本地)", event.data["uuid"])
             } else if ("ready" in event.data) {
                 console.log("uploader已就绪")
+            // 未实现功能：
+            // } else if ("uploaded" in event.data) {
+                //     console.log(event.data["uuid"], "上传进度:", event.data["uploaded"]/event.data["total"]*100, "%")
             } else {
                 console.error("非法消息", event)
             }

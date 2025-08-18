@@ -1,4 +1,4 @@
-<!-- https://code.xueersi.com/xes%20chat/uploader -->
+<!-- https://code.xueersi.com/xes%20chat/uploader_api -->
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -46,7 +46,7 @@
                     if (event.data["uuid"]) {
                         fileUUID = event.data["uuid"]
                     }
-                    const CHUNK_SIZE = 1024 * 1024 * 128 // 每次读128mb
+                    const CHUNK_SIZE = 1024 * 1024 * 2 // 每次读2mb
                     const spark = new SparkMD5.ArrayBuffer()
                     let offset = 0
                     const calcMd5 = () => {

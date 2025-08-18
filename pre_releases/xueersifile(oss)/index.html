@@ -7,53 +7,60 @@
     <title>uploader</title>
 </head>
 <body>
-    UPLOADER
-    <script>
-        // 传入[file, ossParam["data"], uuid]
-        // 传出{"filename": oss文件名, "XESChat": true, "uuid": uuid}
-        // WARNING: 不检查传入参数的合法性
-        window.addEventListener("message", async function(event) {
-            if (event.origin !== "https://code.xueersi.com") return
-            if (typeof event.data !== "object") return
-            // try {
-                let response = await fetch(
-                    event.data[1]["host"],
-                    {
-                        headers: event.data[1]["headers"],
-                        body: event.data[0],
-                        method: "PUT"
-                    }
-                )
-                let url = event.data[1]["url"]
-                if (url.slice(0, 52) !== 'https://livefile.xesimg.com/programme/python_assets/' || (!response["ok"])) {
-                    console.error("上传失败", response)
-                    event.source.window.postMessage(
-                        {'XESChat': true, "error": response},
-                        "https://code.xueersi.com"
-                    )
-                } else {
-                    event.source.window.postMessage(
-                        {
-                            "filename": url.slice(52),
-                            "XESChat": true,
-                            "uuid": event.data[2]
-                        },
-                        "https://code.xueersi.com"
-                    )
+UPLOADER
+<script>
+    // 传入[file, ossParam["data"], uuid]
+    // 传出{"filename": oss文件名, "XESChat": true, "uuid": uuid}
+    // WARNING: 不检查传入参数的合法性
+    window.addEventListener("message", async function(event) {
+        if (event.origin !== "https://code.xueersi.com") return
+        if (typeof event.data !== "object") return
+        try {
+            const REPORT_INTERVAL = 500
+            const CHUNK_SIZE = 1024 * 1024 * 2 // 2mb
+            /** @type File */
+            let file = event.data[0]
+            let params = event.data[1]
+            let uuid = event.data[2]
+            let response = await fetch(
+                params["host"],
+                {
+                    headers: params["headers"],
+                    body: file,
+                    method: "PUT"
                 }
-            // } catch (e) {
-            //     console.error("上传失败", e)
-            //     event.source.window.postMessage(
-            //         {'XESChat': true, "error": e},
-            //         "https://code.xueersi.com"
-            //     )
-            // }
-        }, false)
+            )
+            let url = params["url"]
+            if (url.slice(0, 52) !== 'https://livefile.xesimg.com/programme/python_assets/'
+                || (!response["ok"])) {
+                console.error("上传失败", response)
+                event.source.window.postMessage(
+                    {'XESChat': true, "error": response},
+                    "https://code.xueersi.com"
+                )
+            } else {
+                event.source.window.postMessage(
+                    {
+                        "filename": url.slice(52),
+                        "XESChat": true,
+                        uuid
+                    },
+                    "https://code.xueersi.com"
+                )
+            }
+        } catch (e) {
+            console.error("上传失败", e)
+            event.source.window.postMessage(
+                {'XESChat': true, "error": e},
+                "https://code.xueersi.com"
+            )
+        }
+    }, false)
 
-        window.parent.postMessage(
-            {'ready': true, 'XESChat': true},
-            "https://code.xueersi.com"
-        )
-    </script>
+    window.parent.postMessage(
+        {'ready': true, 'XESChat': true},
+        "https://code.xueersi.com"
+    )
+</script>
 </body>
 </html>

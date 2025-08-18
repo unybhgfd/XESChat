@@ -5,10 +5,10 @@
 
 /**
  * @typedef {object} UserInfoJson
- @property {string} userName
- @property {string} userAvatarFileName
- @property {string} userGender
- @property {string} userDesc
+ * @property {string} userName
+ * @property {string} userAvatarFileName
+ * @property {string} userGender
+ * @property {string} userDesc
  */
 
 /**
