@@ -1,0 +1,81 @@
+<!-- https://code.xueersi.com/xes%20chat/uploader_api -->
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <script src="./jquery-3.3.1.slim.min.js"></script>
+    <script src="./popper.min.js"></script>
+    <script src="./bootstrap.min.js"></script>
+
+    <script src="./spark-md5.min.js"></script>
+    <title>uploader</title>
+</head>
+<body>
+    uploader
+    <div class="input-group-sm">
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="inp-avatar-file">
+            <label class="custom-file-label" for="inp-avatar-file">选择文件</label>
+        </div>
+    </div>
+    <script>
+        // TODO: 新华的电脑太垃圾了, 回去看看这个api是否会更快
+        document.getElementById("inp-avatar-file").addEventListener("change", function() {
+            /** @type File */
+            let file = document.getElementById("inp-avatar-file").files[0]
+            if (!file) return
+            const CHUNK_SIZE = 1024 * 1024 * 2 // 每次读2mb
+            const spark = new SparkMD5.ArrayBuffer()
+            let offset = 0
+            const calcMd5 = () => {
+                const slice = file.slice(offset, offset + CHUNK_SIZE)
+                const reader = new FileReader()
+                reader.onload = e => {
+                    const chunk = e.target.result
+                    spark.append(chunk)
+                    offset += CHUNK_SIZE
+                    if (offset < file.size) {
+                        calcMd5()
+                    } else {
+                        const md5 = spark.end() // 不带0x的hex string
+                        getUploadParam(md5)
+                    }
+                }
+                reader.readAsArrayBuffer(slice)
+            }
+            calcMd5()
+
+            const getUploadParam = async function (md5) {
+                fetch(
+                    "https://code.xueersi.com/api/assets/v2/get_tss_upload_params"
+                        + "?scene=offline_python_assets"
+                        + `&md5=${md5}&filename=${file.name}`
+                ).then(res => res.json()).then((params) => {
+                    uploadFile(params["data"])
+                })
+            }
+
+            const uploadFile = async function (params) {
+                if (params["url"].slice(0, 51) !== "https://static0.xesimg.com/programme/python_assets/") {
+                    console.log("fail")
+                }
+                console.log("url", params["url"])
+                fetch(params["host"], {
+                    method: "PUT",
+                    body: file,
+                    headers: params["headers"]
+                }).then(res => {
+                    if (res.ok) {
+                        console.log("done")
+                    } else {
+                        console.log("fail")
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+</html>

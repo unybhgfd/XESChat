@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!--    <link rel="stylesheet" href="../../bootstrap.min.css">-->
+<!--    <script src="../../jquery-3.3.1.slim.min.js"></script>-->
+<!--    <script src="../../popper.min.js"></script>-->
+<!--    <script src="../../bootstrap.min.js"></script>-->
+<!--    TODO-->
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <script src="./jquery-3.3.1.slim.min.js"></script>
+    <script src="./popper.min.js"></script>
+    <script src="./bootstrap.min.js"></script>
+
+<!--    <script src="../../configs.js"></script>-->
+
+    <title>XESChat - 网盘</title>
+
+    <style>
+        .custom-file-label::after {
+            content:"选择文件夹"
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <iframe id="iframeElement" src="https://code.xueersi.com/xes%20chat/uploader_api"
+            style="border: 0" title="uploader" width="0" height="0"
+            sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
+
+    <div class="input-group-sm">
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="file-input" webkitdirectory multiple disabled>
+            <label class="custom-file-label" for="file-input">选择要上传的文件夹</label>
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <div class="progress" id="progress-bar-div" style="display: none">
+            <div class="progress-bar progress-bar-striped" role="progressbar"
+                 style="width: 10%" aria-valuemin="0"
+                 aria-valuemax="100" id="progress-bar"></div>
+        </div>
+        <div class="spinner-grow text-primary float-right" role="status" style="display: none" id="spinner-grow">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        let sizeTotal = 0
+        let sizeUploaded = 0
+        let fileUploading = {}
+        let fileGettingParams = {}
+        let fileSize = {}
+
+        // 生成随机uuid
+        function generateUUID() {
+            let s = [];
+            const hexDigits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            for (let i = 0; i < 36; i++) {
+                s[i] = hexDigits[Math.floor(Math.random() * 0x10)]
+            }
+            s[14] = "4"
+            s[19] = hexDigits[(s[19] & 0x3) | 0x8]
+            s[8] = s[13] = s[18] = s[23] = "-"
+            return s.join("")
+        }
+
+        /**
+         * 深度优先遍历目录结构（先子目录后父目录）
+         * @param {File[]} fileList - 从webkitdirectory获取的文件列表
+         * @param {(
+         *     file: File,
+         *     dirName: string | null,
+         *     forward: boolean,
+         *     back: boolean
+         * ) => Promise<*>} callback - 回调函数
+         * @author DeepSeek-V3
+         */
+        async function traverseDirectoryDFS(fileList, callback) {
+            // 构建目录树结构
+            const tree = { name: '', children: [], dirs: new Map(), files: [] };
+
+            // 解析所有文件路径并构建树
+            for (const file of fileList) {
+                const segments = file.webkitRelativePath.split('/');
+                let parent = tree;
+
+                // 处理目录路径
+                for (let i = 0; i < segments.length - 1; i++) {
+                    const dirName = segments[i];
+
+                    if (!parent.dirs.has(dirName)) {
+                        const dirNode = {
+                            name: dirName,
+                            children: [],
+                            dirs: new Map(),
+                            files: []
+                        };
+                        parent.dirs.set(dirName, dirNode);
+                        parent.children.push(dirNode);
+                    }
+                    parent = parent.dirs.get(dirName);
+                }
+
+                // 添加文件到当前目录
+                const fileName = segments[segments.length - 1];
+                parent.files.push({ name: fileName, file });
+            }
+
+            // 递归深度优先遍历
+            async function dfs(node) {
+                // 进入目录回调 (forward=true)
+                await callback(null, node.name || null, true, false);
+
+                // 先递归遍历所有子目录
+                for (const dir of node.dirs.values()) {
+                    await dfs(dir);
+                }
+
+                // 然后遍历当前目录的文件
+                for (const fileInfo of node.files) {
+                    await callback(fileInfo.file, node.name || null, false, false);
+                }
+
+                // 退出目录回调 (back=true)
+                await callback(null, node.name || null, false, true);
+            }
+
+            // 从根目录开始遍历
+            await dfs(tree);
+        }
+
+        /**
+         * @param {File} file
+         * @param {string} uuid
+         * @returns {Promise<string>}
+         */
+        async function uploadFile(file, uuid) {
+            document.getElementById("iframeElement").contentWindow.postMessage(
+                {
+                    "file": file,
+                    "uuid": uuid, // 可以不设置, 默认为空字符串
+                    "XESChat": true
+                },
+                "https://code.xueersi.com"
+            )
+            fileGettingParams[uuid] = false
+            fileSize[uuid] = file.size
+            sizeTotal += file.size
+            while (!fileGettingParams[uuid]) {
+                await new Promise(resolve => setTimeout(resolve, 50))
+            }
+            let tmp = fileGettingParams[uuid]
+            delete fileGettingParams[uuid]
+            return tmp
+        }
+
+        window.addEventListener("message", function(event) {
+            if (event.origin !== "https://code.xueersi.com") return
+            if (typeof event.data !== "object") return
+            if (!("XESChat" in event.data)) return
+            if ("filename" in event.data) {
+                delete fileUploading[event.data["uuid"]]
+                sizeUploaded += fileSize[event.data["uuid"]]
+                delete fileSize[event.data["uuid"]]
+            } else if ("error" in event.data) {
+                console.log("上传失败")
+                if (event.data["error"] !== true) {
+                    console.log("    失败原因", event.data["error"])
+                }
+            } else if ("filenamePreview" in event.data) {
+                // console.log("已获取oss文件名, 但文件尚在上传中")
+                // console.log("    oss文件名", event.data["filenamePreview"])
+                // console.log("    文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filenamePreview"])
+                // console.log("    文件uuid(本地)", event.data["uuid"])
+                fileGettingParams[event.data["uuid"]] = event.data["filenamePreview"]
+                fileUploading[event.data["uuid"]] = false
+            } else if ("ready" in event.data) {
+                console.log("uploader已就绪")
+                document.getElementById('file-input').disabled = false
+                // 未实现功能：
+                // } else if ("uploaded" in event.data) {
+                //     console.log(event.data["uuid"], "上传进度:", event.data["uploaded"]/event.data["total"]*100, "%")
+            } else {
+                console.error("非法消息", event)
+            }
+        })
+
+        document.getElementById('file-input').addEventListener('change', async (event) => {
+            document.getElementById('file-input').disabled = true
+            const fileList = event.target.files;
+
+            sizeTotal = 0
+            sizeUploaded = 0
+            fileUploading = {}
+            fileGettingParams = {}
+            fileSize = {}
+            let directoryData = {files: {}, directories: {}}
+            let currentPath = []
+            let uploadDirectoryDone = false
+            let uploadResult = null
+
+            traverseDirectoryDFS(fileList, async (file, path, forward, back) => {
+                if (file) {
+                    let fileOssName = await uploadFile(file, generateUUID())
+                    directoryData.files[file.name] = fileOssName
+                } else if (forward) {
+                    if (!path) return // 根目录
+                    currentPath.push(directoryData)
+                    directoryData = {files: {}, directories: {}}
+                } else if (back) {
+                    let fileOssName = await uploadFile(
+                        new File(
+                            [JSON.stringify(directoryData)],
+                            ".tmp.json"
+                        ),
+                        generateUUID()
+                    )
+                    if (!path) {
+                        // 根目录
+                        uploadDirectoryDone = true
+                        uploadResult = fileOssName
+                        return
+                    }
+                    directoryData = currentPath.pop()
+                    directoryData.directories[path] = fileOssName
+                }
+            }).then(() => {});
+
+            (async () => {
+                document.getElementById("spinner-grow").style.display = ""
+                while (!uploadDirectoryDone) {
+                    await new Promise(resolve => setTimeout(resolve, 250))
+                }
+                document.getElementById("spinner-grow").style.display = "none"
+            })().then(() => {})
+
+            document.getElementById("progress-bar-div").style.display = ""
+            while (sizeUploaded !== sizeTotal || !uploadDirectoryDone) {
+                await new Promise(resolve => setTimeout(resolve, 250))
+                document.getElementById("progress-bar").style.width = sizeUploaded/sizeTotal*100 + "%"
+            }
+            document.getElementById("progress-bar-div").style.display = "none"
+
+            console.log('遍历完成');
+            console.log(uploadResult)
+            document.getElementById('file-input').disabled = false
+        });
+    </script>
+</div>
+</body>
+</html>

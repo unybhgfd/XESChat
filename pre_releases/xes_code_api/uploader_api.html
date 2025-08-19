@@ -14,10 +14,7 @@
             style="border: 0" title="uploader" width="0" height="0"
             sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
     <script>
-        // 应该接收一个file对象, 上传完成后给父窗口发送oss文件名(string)
-        // 如: https://livefile.xesimg.com/programme/python_assets/c0ac2b6e95d2887cb18b980aba8763c2.txt
-        // 返回: c0ac2b6e95d2887cb18b980aba8763c2.txt
-        // 有文件大小限制, 建议最多传10gb左右
+        // 上传有文件大小限制, 建议最多传10gb左右
         let parentOrigin = ""
         let parentWindow = false
         window.addEventListener("message", async function(event) {
