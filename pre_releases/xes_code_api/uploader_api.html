@@ -38,6 +38,7 @@
                         )
                     }
                 } else if(event.data["file"]) {
+                    /** @type {File} */
                     const file = event.data["file"]
                     let fileUUID = ""
                     if (event.data["uuid"]) {
@@ -59,19 +60,23 @@
                                 const md5 = spark.end() // 不带0x的hex string
                                 parentOrigin = event.origin
                                 parentWindow = event.source.window
-                                getUploadParam(md5)
+                                if (event.data["fileName"]) {
+                                    getUploadParam(md5, event.data["fileName"].toString())
+                                } else {
+                                    getUploadParam(md5, file.name)
+                                }
                             }
                         }
                         reader.readAsArrayBuffer(slice)
                     }
                     calcMd5()
-                    const getUploadParam = async function (md5) {
+                    const getUploadParam = async function (md5, fileName) {
                         let param = await fetch(
                             "https://code.xueersi.com/api/assets/get_oss_upload_params"
                                 + "?scene=offline_python_assets"
                                 + "&md5=" + md5
                                 + "&filename=" + encodeURIComponent(
-                                    "C:\\Users\\WIN10\\Downloads\\" + file.name
+                                    "C:\\Users\\WIN10\\Downloads\\" + fileName
                                 ),
                             {
                                 method: "GET",

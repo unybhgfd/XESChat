@@ -4,19 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<!--    <link rel="stylesheet" href="../../bootstrap.min.css">-->
-<!--    <script src="../../jquery-3.3.1.slim.min.js"></script>-->
-<!--    <script src="../../popper.min.js"></script>-->
-<!--    <script src="../../bootstrap.min.js"></script>-->
-<!--    TODO-->
-    <link rel="stylesheet" href="./bootstrap.min.css">
-    <script src="./jquery-3.3.1.slim.min.js"></script>
-    <script src="./popper.min.js"></script>
-    <script src="./bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../bootstrap.min.css">
+    <script src="../../jquery-3.3.1.slim.min.js"></script>
+    <script src="../../popper.min.js"></script>
+    <script src="../../bootstrap.min.js"></script>
 
-<!--    <script src="../../configs.js"></script>-->
-
-    <title>XESChat - 网盘</title>
+    <title>XESChat - 网盘 - 上传</title>
 
     <style>
         .custom-file-label::after {
@@ -30,10 +23,13 @@
             style="border: 0" title="uploader" width="0" height="0"
             sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
 
+    <br>
+    <h2 class="row justify-content-center">XESChat - 上传文件夹</h2>
+
     <div class="input-group-sm">
         <div class="custom-file">
             <input type="file" class="custom-file-input" id="file-input" webkitdirectory multiple disabled>
-            <label class="custom-file-label" for="file-input">选择要上传的文件夹</label>
+            <label class="custom-file-label" for="file-input" id="file-input-label">选择要上传的文件夹</label>
         </div>
     </div>
 
@@ -43,8 +39,8 @@
                  style="width: 10%" aria-valuemin="0"
                  aria-valuemax="100" id="progress-bar"></div>
         </div>
-        <div class="spinner-grow text-primary float-right" role="status" style="display: none" id="spinner-grow">
-            <span class="sr-only">Loading...</span>
+        <div class="spinner-grow text-primary float-right" role="status"
+             style="display: none" id="spinner-grow">
         </div>
     </div>
 
@@ -68,18 +64,29 @@
             return s.join("")
         }
 
+        function randomFilename() {
+            const hexDigits = "0123456789abcdefghijklmnopqrstuvwxyz"
+            let s = []
+            for (let i = 0; i < 9; i++) {
+                s[i] = hexDigits[Math.floor(Math.random() * 0x10)]
+            }
+            s[4] = "."
+            return s.join('') + "_" + Date.now().toString()
+        }
+
         /**
-         * 深度优先遍历目录结构（先子目录后父目录）
-         * @param {File[]} fileList - 从webkitdirectory获取的文件列表
+         * dfs遍历目录（先子目录后父目录）
+         * @param {File[]} fileList
          * @param {(
          *     file: File,
          *     dirName: string | null,
          *     forward: boolean,
          *     back: boolean
-         * ) => Promise<*>} callback - 回调函数
+         * ) => Promise<*>} callback
          * @author DeepSeek-V3
          */
         async function traverseDirectoryDFS(fileList, callback) {
+            // ai特有的函数内一堆注释但是函数不写js-doc注释
             // 构建目录树结构
             const tree = { name: '', children: [], dirs: new Map(), files: [] };
 
@@ -139,11 +146,12 @@
          * @returns {Promise<string>}
          */
         async function uploadFile(file, uuid) {
+            //  TODO: 文件过大需要切片
             document.getElementById("iframeElement").contentWindow.postMessage(
                 {
-                    "file": file,
-                    "uuid": uuid, // 可以不设置, 默认为空字符串
-                    "XESChat": true
+                    file, uuid,
+                    "XESChat": true,
+                    "fileName": randomFilename(),
                 },
                 "https://code.xueersi.com"
             )
@@ -172,18 +180,10 @@
                     console.log("    失败原因", event.data["error"])
                 }
             } else if ("filenamePreview" in event.data) {
-                // console.log("已获取oss文件名, 但文件尚在上传中")
-                // console.log("    oss文件名", event.data["filenamePreview"])
-                // console.log("    文件地址", "https://livefile.xesimg.com/programme/python_assets/"+event.data["filenamePreview"])
-                // console.log("    文件uuid(本地)", event.data["uuid"])
                 fileGettingParams[event.data["uuid"]] = event.data["filenamePreview"]
                 fileUploading[event.data["uuid"]] = false
             } else if ("ready" in event.data) {
-                console.log("uploader已就绪")
                 document.getElementById('file-input').disabled = false
-                // 未实现功能：
-                // } else if ("uploaded" in event.data) {
-                //     console.log(event.data["uuid"], "上传进度:", event.data["uploaded"]/event.data["total"]*100, "%")
             } else {
                 console.error("非法消息", event)
             }
@@ -202,11 +202,11 @@
             let currentPath = []
             let uploadDirectoryDone = false
             let uploadResult = null
+            let uploadResultName = null
 
             traverseDirectoryDFS(fileList, async (file, path, forward, back) => {
                 if (file) {
-                    let fileOssName = await uploadFile(file, generateUUID())
-                    directoryData.files[file.name] = fileOssName
+                    directoryData.files[file.name] = await uploadFile(file, generateUUID())
                 } else if (forward) {
                     if (!path) return // 根目录
                     currentPath.push(directoryData)
@@ -215,12 +215,13 @@
                     let fileOssName = await uploadFile(
                         new File(
                             [JSON.stringify(directoryData)],
-                            ".tmp.json"
+                            "e"
                         ),
                         generateUUID()
                     )
                     if (!path) {
                         // 根目录
+                        uploadResultName = Object.getOwnPropertyNames(directoryData.directories)[0]
                         uploadDirectoryDone = true
                         uploadResult = fileOssName
                         return
@@ -245,11 +246,28 @@
             }
             document.getElementById("progress-bar-div").style.display = "none"
 
-            console.log('遍历完成');
-            console.log(uploadResult)
-            document.getElementById('file-input').disabled = false
+            // 上传完成 (uploadResult)
+            console.log("上传完成", uploadResult)
+            document.getElementById("file-input-label").innerText = "还需上传请刷新页面"
+            $("#upload-result-collapse").collapse("show")
+            document.getElementById("collapse-p-element").innerHTML = `文件夹<code>${uploadResultName}</code>上传成功`
         });
     </script>
+    <div class="collapse multi-collapse" id="upload-result-collapse">
+<!--    <div>-->
+        <div class="card card-body">
+            <p id="collapse-p-element"></p>
+            <div class="btn-group" role="group" style="width: fit-content">
+                <button type="button" class="btn btn-secondary" id="copy-share-link-btn">复制分享链接(任何人都能访问)</button>
+                <script>
+                    document.getElementById("copy-share-link-btn").addEventListener("click", async function () {
+                        await navigator.clipboard.writeText("") // TODO: 完成pan_viewer实现这里
+                    })
+                </script>
+                <button type="button" class="btn btn-secondary" disabled>保存到网盘</button>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

@@ -67,16 +67,19 @@
 
         document.getElementById("inp-avatar-file").addEventListener("change", function() {
             let uuid = generateUUID()
+            /** @type {File} */
             let f = document.getElementById("inp-avatar-file").files[0]
+            let fileName = f.name
             document.getElementById("iframeElement").contentWindow.postMessage(
                 {
                     "file": f,
-                    "uuid": uuid, // 可以不设置, 默认为空字符串
+                    uuid, // 可以不设置, 默认为空字符串,
+                    fileName, // 可选, 默认为file.name
                     "XESChat": true
                 },
                 "https://code.xueersi.com"
             )
-            console.log("已上传文件", f)
+            console.log("已开始上传文件", f)
             console.log("    文件uuid(本地)", uuid)
         })
     </script>
