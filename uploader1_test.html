@@ -22,7 +22,8 @@
         </div>
     </div>
     <script>
-        // TODO: 新华的电脑太垃圾了, 回去看看这个api是否会更快
+        // TOD O: 新华的电脑太垃圾了, 回去看看这个api是否会更快
+        // 然而并没有, 差评差评
         document.getElementById("inp-avatar-file").addEventListener("change", function() {
             /** @type File */
             let file = document.getElementById("inp-avatar-file").files[0]
@@ -52,7 +53,7 @@
                 fetch(
                     "https://code.xueersi.com/api/assets/v2/get_tss_upload_params"
                         + "?scene=offline_python_assets"
-                        + `&md5=${md5}&filename=${file.name}`
+                        + `&md5=${md5}&filename=${encodeURIComponent(file.name)}`
                 ).then(res => res.json()).then((params) => {
                     uploadFile(params["data"])
                 })

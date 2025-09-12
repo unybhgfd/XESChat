@@ -53,7 +53,7 @@ class XesOssMsgUploader {
                 params["url"] = "err"
                 uploadSucceed = true
             });
-        while (!uploadSucceed) {wait(100)}
+        while (!uploadSucceed) {await wait(100)}
         return params["url"]
     }
 }

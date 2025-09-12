@@ -19,6 +19,7 @@
         let parentWindow = false
         window.addEventListener("message", async function(event) {
             if (!event.data["XESChat"]) return
+            let fileUUID
             try {
                 if (event.source.window === document.getElementById("uploaderIframe").contentWindow && event.data["XESChat"]) {
                     // 从iframe传过来的消息
@@ -40,7 +41,7 @@
                 } else if(event.data["file"]) {
                     /** @type {File} */
                     const file = event.data["file"]
-                    let fileUUID = ""
+                    fileUUID = ""
                     if (event.data["uuid"]) {
                         fileUUID = event.data["uuid"]
                     }
@@ -95,7 +96,7 @@
                             || url.slice(0, 52) !== 'https://livefile.xesimg.com/programme/python_assets/') {
                             console.error("上传失败", param)
                             parentWindow.postMessage(
-                                {'XESChat': true, "error": true},
+                                {'XESChat': true, "error": true, "uuid": fileUUID},
                                 parentOrigin
                             )
                         } else {
@@ -120,10 +121,17 @@
                 }
             } catch (e) {
                 console.error("上传失败", e)
-                event.source.window.postMessage(
-                    {'XESChat': true, "error": e},
-                    event.origin
-                )
+                if (fileUUID) {
+                    event.source.window.postMessage(
+                        {'XESChat': true, "error": e, "uuid": fileUUID},
+                        event.origin
+                    )
+                } else {
+                    event.source.window.postMessage(
+                        {'XESChat': true, "error": e},
+                        event.origin
+                    )
+                }
             }
         }, false)
     </script>

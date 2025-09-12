@@ -18,7 +18,7 @@
             sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
     <div class="input-group-sm">
         <div class="custom-file">
-            <input type="file" class="custom-file-input" id="inp-avatar-file">
+            <input type="file" class="custom-file-input" id="inp-avatar-file" disabled>
             <label class="custom-file-label" for="inp-avatar-file">选择文件</label>
         </div>
     </div>
@@ -57,6 +57,7 @@
                 console.log("    文件uuid(本地)", event.data["uuid"])
             } else if ("ready" in event.data) {
                 console.log("uploader已就绪")
+                document.getElementById("inp-avatar-file").disabled = false
             // 未实现功能：
             // } else if ("uploaded" in event.data) {
                 //     console.log(event.data["uuid"], "上传进度:", event.data["uploaded"]/event.data["total"]*100, "%")

@@ -61,7 +61,7 @@
                     <label for="inp-gender"></label>
                     <select class="custom-select" id="inp-gender">
                         <option value="不愿透露" selected disabled>选择性别</option>
-                        <option value="不愿透露">不愿透露</option>
+                        <option value="这是个秘密">不愿透露</option>
                         <option value="男">男</option>
                         <option value="女">女</option>
                         <option value="自定义">自定义(并非)</option>
@@ -240,6 +240,7 @@
                             document.getElementById("inp-desc")
                         ]
                     ]
+                    // 填充用户信息
                     pubKeyOptions.then(function (resolve) {
                         formDct.map(function (value) {
                             if (value[2] !== "userAvatarFileName") {

@@ -192,7 +192,7 @@ async function xesCppProjSearchOwnByName(projName) {
  * @param {0 | number} parent_id 该回复所在的评论id, 若是评论则为0
  * @param {0 | number} target_id 该回复的目标评论(或回复)id, 若是评论则为0
  * @param {string} user_id 评论/回复 的发布者用户id
- * @param {string} reply_user_id TODO: 这是干嘛的
+ * @param {string} reply_user_id
  * @param {string} content 评论/回复 内容
  * @param {number} replies 回复数
  * @param {0 | 1} removed 是否被学而思管理删除

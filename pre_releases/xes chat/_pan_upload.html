@@ -1,3 +1,4 @@
+<!-- 暂停开发, 先做完重要功能再说 -->
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -151,7 +152,6 @@
                 {
                     file, uuid,
                     "XESChat": true,
-                    "fileName": randomFilename(),
                 },
                 "https://code.xueersi.com"
             )
@@ -215,7 +215,7 @@
                     let fileOssName = await uploadFile(
                         new File(
                             [JSON.stringify(directoryData)],
-                            "e"
+                            randomFilename()
                         ),
                         generateUUID()
                     )

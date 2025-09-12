@@ -53,6 +53,7 @@ if (sessionStorage.getItem(idxSS_XES_USER_INFO_JSON_STRING) !== null) {
         try {
             const response = await fetch("https://code.xueersi.com/api/user/info", {
                 method: "GET",
+                cache: "no-cache",
                 headers: {
                     "Content-Type": "application/json"
                 },

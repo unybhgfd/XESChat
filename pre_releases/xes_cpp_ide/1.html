@@ -25,88 +25,96 @@
 
     <script>
         (async function() {
-            mainBlock: {
-                let keyPair
-                secKeyBlock: {
-                    let haveLocalSecKey = false
-                    if (
-                        localStorage.getItem(idxLS_XES_SEC_KEY_WIF) !== null
-                    ) {
-                        // 本地有私钥
-                        try {
-                            keyPair = ECPair.ECPair.fromWIF(localStorage.getItem(idxLS_XES_SEC_KEY_WIF))
-                            haveLocalSecKey = true
-                        } catch (e) {
-                            console.log("从本地导入私钥失败", e)
-                        }
-                    }
-                    // 本地无私钥
-
-                    let search_result = await xesCppProjSearchOwnByName(idxName_secKeyProjName)
-                    if (search_result !== null) {
-                        // 有搜到私钥作品
-                        try {
-                            keyPair = ECPair.ECPair.fromWIF(await wifAesHexDecrypt(
-                                xesSecKeyProjectGetWifAesHex(await xesProjectView(search_result))))
-                        } catch (e) {
-                            console.log("从私钥作品导入私钥失败", e)
-                            if (!haveLocalSecKey) {
-                                keyPair = ECPair.ECPair.makeRandom()
+            try {
+                mainBlock: {
+                    let keyPair
+                    secKeyBlock: {
+                        let haveLocalSecKey = false
+                        if (
+                            localStorage.getItem(idxLS_XES_SEC_KEY_WIF) !== null
+                        ) {
+                            // 本地有私钥
+                            try {
+                                keyPair = ECPair.ECPair.fromWIF(localStorage.getItem(idxLS_XES_SEC_KEY_WIF))
+                                haveLocalSecKey = true
+                            } catch (e) {
+                                console.log("从本地导入私钥失败", e)
                             }
-                            localStorage.setItem(idxLS_XES_SEC_KEY_WIF, keyPair.toWIF())
-                            await xesSecKeyProjSetWif(search_result)
                         }
-                        break secKeyBlock
-                    }
-                    // 没有搜到私钥作品
-                    if (!haveLocalSecKey) {
-                        keyPair = ECPair.ECPair.makeRandom()
-                    }
-                    console.log("需要新建私钥作品")
-                    try {
-                        await xesSecKeyProjCreate(await genWifAesHex())
-                    } catch (e) {
-                        console.assert(e["status_code"] === 400)
-                        break mainBlock
-                    }
-                }
-                localStorage.setItem(idxLS_XES_SEC_KEY_WIF, keyPair.toWIF())
+                        // 本地无私钥
 
-
-                const pubKeyHex = keyPair.publicKey.toString("hex")
-                if ((
-                    localStorage.getItem(idxLS_XES_PUBKEY_HEX) !== null
-                ) && (
-                    localStorage.getItem(idxLS_XES_PUBKEY_HEX) !== pubKeyHex
-                )) {
-                    console.log("本地公钥不匹配私钥!")
-                }
-                localStorage.setItem(idxLS_XES_PUBKEY_HEX, pubKeyHex)
-
-                let pubKeyProjId
-                if (localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID) === null) {
-                    let search_result = await xesCppProjSearchOwnByName(idxName_pubKeyProjName)
-                    if (search_result === null) {
+                        let search_result = await xesCppProjSearchOwnByName(idxName_secKeyProjName)
+                        if (search_result !== null) {
+                            // 有搜到私钥作品
+                            try {
+                                keyPair = ECPair.ECPair.fromWIF(await wifAesHexDecrypt(
+                                    xesSecKeyProjectGetWifAesHex(await xesProjectView(search_result))))
+                            } catch (e) {
+                                console.log("从私钥作品导入私钥失败", e)
+                                if (!haveLocalSecKey) {
+                                    keyPair = ECPair.ECPair.makeRandom()
+                                }
+                                localStorage.setItem(idxLS_XES_SEC_KEY_WIF, keyPair.toWIF())
+                                await xesSecKeyProjSetWif(search_result)
+                            }
+                            break secKeyBlock
+                        }
+                        // 没有搜到私钥作品
+                        if (!haveLocalSecKey) {
+                            keyPair = ECPair.ECPair.makeRandom()
+                        }
+                        console.log("需要新建私钥作品")
                         try {
-                            pubKeyProjId = await xesPubKeyProjCreate(localStorage.getItem(idxLS_XES_PUBKEY_HEX))
+                            await xesSecKeyProjCreate(await genWifAesHex())
                         } catch (e) {
                             console.assert(e["status_code"] === 400)
                             break mainBlock
                         }
-                    } else {
-                        pubKeyProjId = search_result.toString()
                     }
-                    localStorage.setItem(idxLS_XES_PUBKEY_PROJ_ID, pubKeyProjId)
-                } else {
-                    pubKeyProjId = localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID)
+                    localStorage.setItem(idxLS_XES_SEC_KEY_WIF, keyPair.toWIF())
+
+
+                    const pubKeyHex = keyPair.publicKey.toString("hex")
+                    if ((
+                        localStorage.getItem(idxLS_XES_PUBKEY_HEX) !== null
+                    ) && (
+                        localStorage.getItem(idxLS_XES_PUBKEY_HEX) !== pubKeyHex
+                    )) {
+                        console.log("本地公钥不匹配私钥!")
+                    }
+                    localStorage.setItem(idxLS_XES_PUBKEY_HEX, pubKeyHex)
+
+                    let pubKeyProjId
+                    if (localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID) === null) {
+                        let search_result = await xesCppProjSearchOwnByName(idxName_pubKeyProjName)
+                        if (search_result === null) {
+                            try {
+                                pubKeyProjId = await xesPubKeyProjCreate(localStorage.getItem(idxLS_XES_PUBKEY_HEX))
+                            } catch (e) {
+                                console.assert(e["status_code"] === 400)
+                                break mainBlock
+                            }
+                        } else {
+                            pubKeyProjId = search_result.toString()
+                        }
+                        localStorage.setItem(idxLS_XES_PUBKEY_PROJ_ID, pubKeyProjId)
+                    } else {
+                        pubKeyProjId = localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID)
+                    }
+                    if (xesPubKeyProjectGetKey(await xesProjectView(pubKeyProjId)) !== pubKeyHex) {
+                        await xesPubKeyProjSetPubKey(pubKeyHex)
+                    }
+                    window.location = "/xes%20chat"
+                    return
                 }
-                if (xesPubKeyProjectGetKey(await xesProjectView(pubKeyProjId)) !== pubKeyHex) {
-                    await xesPubKeyProjSetPubKey(pubKeyHex)
-                }
-                window.location = "/xes%20chat"
-                return
+            } catch (e) {
+                localStorage.removeItem(idxLS_XES_SEC_KEY_WIF)
+                localStorage.removeItem(idxLS_XES_PUBKEY_HEX)
+                localStorage.removeItem(idxLS_XES_PUBKEY_PROJ_ID)
+                sessionStorage.removeItem(idxSS_XES_USER_INFO_JSON_STRING)
+                window.alert("登录状态有误，正在重新登录")
+                window.location.reload()
             }
-            // TODO: 显示'当日创作作品数已达上限:5'的提示
             window.alert("抱歉, 当日创作作品数已达上限, 请在明天重新登录")
             window.alert("抱歉, 当日创作作品数已达上限, 请在明天重新登录")
             window.alert("抱歉, 当日创作作品数已达上限, 请在明天重新登录")

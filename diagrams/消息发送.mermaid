@@ -1,0 +1,86 @@
+---
+config:
+  theme: neutral
+  look: handDrawn
+  layout: elk
+---
+%% 死人mermaid编辑起来有点麻烦, 所以还得用draw.io（捂脸
+stateDiagram-v2
+    state user_ {
+        user_sec: 私钥（不公开）
+        user_pub: 公钥
+        user_pubProjId: 公钥作品id
+    }
+    user_: 发送者
+
+    state msg_ {
+        msg_time: 时间戳（发送时间）
+        msg_text: 消息内容（文本）
+        msg_use: 发送者公钥作品id
+    }
+    msg_: 原消息
+    user_ --> msg_
+    msgStr: json字符串
+    msg_ --> msgStr
+
+    sign: 签名
+    state sign_join <<join>>
+    user_ --> sign_join: 私钥>#
+    msgStr --> sign_join
+    sign_join --> sign
+
+    state msg2_ {
+        msg2_text: 原消息
+        msg2_sign: 签名
+    }
+    msg2_: 消息2.0
+    msgStr --> msg2_: #>原消息
+    sign --> msg2_: #>签名
+    msgStr2: json字符串
+    msg2_ --> msgStr2
+
+    state concatStr_ {
+        direction LR
+        concatStr_randStr: [随机4字符hex字符串]
+        concatStr_charDot: "."
+        concatStr_charUnderline: "_"
+        concatStr_randStr2: [随机4字符hex字符串]
+        concatStr_time: [当前时间戳]
+        concatStr_randStr --> concatStr_charDot
+        concatStr_charDot --> concatStr_randStr2
+        concatStr_randStr2 --> concatStr_charUnderline
+        concatStr_charUnderline --> concatStr_time
+    }
+    concatStr_: 随机文件名
+
+    state file_ {
+        file_name: 文件名
+        file_content: 文件内容
+    }
+    file_: 文件
+    msgStr2 --> file_: #>文件内容
+    concatStr_ --> file_: 调用, #>文件名
+    oss: 学而思oss储存
+    file_ --> oss: 请求
+    msg3: 消息3.0(oss文件名)
+    oss --> msg3: 请求
+    state have_pwd <<choice>>
+    msg3 --> have_pwd
+
+    state aes_ {
+        aes_content: 加密的内容
+        aes_pwd: 密码
+    }
+    aes_: aes加密
+    state room_ {
+        room_pwd: 密码（可能没有）
+        room_others: ...
+    }
+    room_: 群聊
+    room_ --> aes_: 密码>密码
+    msg3 --> aes_: #>加密的内容
+    have_pwd --> aes_: 群有设置密码
+
+    cloudVar: 云变量名
+    aes_ --> cloudVar: 群有设置密码，传入aes加密结果
+    have_pwd --> cloudVar: 否则直接传入消息3.0

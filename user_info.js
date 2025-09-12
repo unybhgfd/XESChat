@@ -37,12 +37,12 @@ async function xesPubKeyProjSetOption(
  * ]}
  * */
 const xesPubKeyProjOptionsLengthLimit = [
-    {
+    { // 下限, 单位: 字符
         userName: 1,
         userAvatarFileName: 36,
         userGender: 0,
         userDesc: 0,
-    }, {
+    }, { // 上限
         userName: 10,
         userAvatarFileName: 37,
         userGender: 4,
