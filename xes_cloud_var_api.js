@@ -2,6 +2,12 @@
  * requires: 无
  */
 
+function wait(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
+}
+
 
 /**
  * 学而思云变量
@@ -24,13 +30,13 @@ class XesWsCloudVar {
 
     /**
      * constructor
-     * @param user_id {string}
-     * @param project_id
+     * @param userId {string}
+     * @param projectId
      * @param onmessage {XesWsCloudVarCallback} 接收到消息时的回调函数
      */
-    constructor(user_id = "1", project_id = "2", onmessage = function(event) {}) {
-        this.user_id = user_id;
-        this.project_id = project_id;
+    constructor(userId = "1", projectId = "2", onmessage = function(event) {}) {
+        this.user_id = userId;
+        this.project_id = projectId;
         this.socket = new WebSocket("wss://api.xueersi.com/codecloudvariable/ws:80")
         this.onmessageCallback = onmessage
         this.socket.onmessage = function(event) {
@@ -58,19 +64,19 @@ class XesWsCloudVar {
 
     /**
      * 新建云变量
-     * @param {string} var_name
+     * @param {string} varName
      */
-    createVar(var_name) {
+    createVar(varName) {
         this.socket.send(JSON.stringify(
             {
                 "method": "create", "user": this.user_id, "project_id": this.project_id,
-                "name": "\u2601 " + var_name, "value": 0
+                "name": "\u2601 " + varName, "value": "0"
             }
         ))
         this.socket.send(JSON.stringify(
             {
                 "method": "set", "user": this.user_id, "project_id": this.project_id,
-                "name": "\u2601 " + var_name, "value": 1
+                "name": "\u2601 " + varName, "value": "1"
             }
         ))
     }

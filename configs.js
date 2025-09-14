@@ -75,7 +75,7 @@ if (window.location.pathname !== "/ide/code/1" // 不在登录界面
     localStorage.getItem(idxLS_XES_SEC_KEY_WIF) === null
     || localStorage.getItem(idxLS_XES_PUBKEY_HEX) === null
     || localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID) === null
-    ) && window.origin.slice(0, 22) !== "http://localhost:63342" // webstorm的默认预览
+    ) && window.location.hostname === "code.xueersi.com"
 ) {
     window.location.href = "https://code.xueersi.com/ide/code/1?xes_chat=true"
 }
