@@ -9,8 +9,8 @@ class CloudVar {
     /**
      * NOTE: 默认不会获取之前的消息，需要调用refresh()
      * @param {string} userId
-     * @param {string} projectId
-     * @param {number} msgMax
+     * @param {string} projectId 这里可以是任意string
+     * @param {number} msgMax 最大云变量数, 多余这个数量调用回调函数后断开连接
      * @param {(string) => *} onNewMsg
      * @param {() => *} onMsgMaxExceed
      */

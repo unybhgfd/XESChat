@@ -3,8 +3,6 @@
  */
 
 
-// TODO: 把这个狗屎改了, 看着不顺眼啊
-
 /** 简单的字符串uploader, 无需跨域 */
 class XesOssMsgUploader {
     constructor() {}
@@ -24,13 +22,10 @@ class XesOssMsgUploader {
     }
 
     async #getParams(md5) {
-        let xhr = new XMLHttpRequest()
-        xhr.open("GET", "https://code.xueersi.com/api/assets/v2/get_tss_upload_params"
-                                    + "?scene=offline_python_assets"
-                                    + `&md5=${md5}&filename=${XesOssMsgUploader.getFilename()}`)
-        xhr.send()
-        while (xhr.readyState !== XMLHttpRequest.DONE) {await wait(100)}
-        return JSON.parse(xhr.responseText)
+        let resp = await fetch("https://code.xueersi.com/api/assets/v2/get_tss_upload_params"
+            + "?scene=offline_python_assets"
+            + `&md5=${md5}&filename=${XesOssMsgUploader.getFilename()}`);
+        return await resp.json();
     }
 
     async uploadString(content) {
