@@ -16,148 +16,78 @@
     <script src="https://livefile.xesimg.com/programme/python_assets/4be1829fabdb641338f00a0c0d189a33.js"></script>
 
     <title>XESChat文件查看</title>
-
-    <style>
-        .file-tree-right > * {
-            margin: 0 0 0 .5rch;
-            padding: 0;
-        }
-    </style>
 </head>
 <body>
 <div class="container">
     <br>
-<!--    <h2 class="row justify-content-center">XESChat文件夹查看</h2>-->
 <!-- TODO -->
     <script>
-        // 生成随机uuid
-        function generateUUID() {
-            let s = [];
-            const hexDigits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            for (let i = 0; i < 36; i++) {
-                s[i] = hexDigits[Math.floor(Math.random() * 0x10)]
-            }
-            s[14] = "4"
-            s[19] = hexDigits[(s[19] & 0x3) | 0x8]
-            s[8] = s[13] = s[18] = s[23] = "-"
-            return s.join("")
-        }
+        const OSS_URL = "https://livefile.xesimg.com/programme/python_assets/"
 
         /**
-         * 元素有无特定class
-         * @param {Element} elem
-         * @param {string} name
-         * @returns {boolean}
-         */
-        function elemHasClass(elem, name) {
-            return (" " + elem.className + " ").indexOf(" " + name + " ") !== -1;
-        }
-
-        /**
-         * 删除元素特定class
-         * @param {Element} element
-         * @param {string} className
-         */
-        function elemRemoveClass(element, className) {
-            let classes = element.className.split(' ').filter(Boolean);
-            const index = classes.indexOf(className);
-            if (index !== -1) {
-                classes.splice(index, 1);
-            }
-            element.className = classes.join(' ');
-        }
-
-        /**
-         * @param {number} ms
-         * @returns {Promise<*>}
-         */
-        function wait(ms) {
-            return new Promise(resolve => {
-                setTimeout(resolve, ms)
-            })
-        }
-
-        /*
-        新增元素类:
-            .btn-dir: 文件夹的 展开/折叠 按钮
-            .no-visited-dir: 文件夹内容需要加载
-         */
-
-        /**
-         * @param {string} dirUuid
          * @param {string} dirName
-         * @return {HTMLDivElement}
-         */
-        function generateDirectoryElement(dirUuid, dirName) {
-            let elem = document.createElement("div")
-            elem.className = "row flex-row"
-            elem.id = dirUuid
-
-            let icon = "https://livefile.xesimg.com/programme/python_assets/cad19b88620ade8a5d9cdc002b436c7c.svg"
-            if (folderName2Icon["dirname"]) {
-                icon = "https://livefile.xesimg.com/programme/python_assets/" + folderName2Icon["dirname"]
+         * */
+        function getDirIconUrl(dirName) {
+            let icon = OSS_URL+"cad19b88620ade8a5d9cdc002b436c7c.svg"
+            if (folderName2Icon[dirName]) {
+                icon = OSS_URL + folderName2Icon[dirName]
             }
+            return icon
+        }
 
-            elem.innerHTML = `
-                <button type="button" class="btn btn-outline-dark pl-1 pt-0 btn-dir"
-                        style="width: 1.2rem; height: 1.2rem;" title="button" type="button">
-                    <img src="${icon}" alt="" style="width: 1rem; height: 1rem; align-self: center">
-                </button>
-                <div class="file-tree-right p-0 ml-1 col list-group no-visited-dir" id="${dirUuid}">
-                    <p>${dirName}</p>
-                </div>
-            `
+        /**
+         * @param {string} fileName
+         */
+        function getFileIconUrl(fileName) {
+            let icon = OSS_URL+"567eb7b5df24e99f9fe7fe4b1b0a40de.svg"
+            if (fileName2Icon[fileName]) {
+                icon = OSS_URL + folderName2Icon[fileName]
+            } else {
+                let exts = fileName.split(".")
+                if (exts.length > 1) {
+                    let fileExt = exts[exts.length-1]
+                    if (fileExtension2Icon[fileExt]) {
+                        icon = OSS_URL + folderName2Icon[fileExt]
+                    }
+                }
+            }
+            return icon
+        }
 
-            return elem
+        function generateDirElem(dirData) {
+            let e = document.createElement("div")
+            // TODO(unybhgfd)
         }
 
         /** @type {Record<string, string>} */
-        let dirElemUuid2ossName = {}
         $(document).ready(function () {
             // TODO
             // example: root="rules" #d70a40789642a0fac5a4267e8803c88b.2dda_1755690656973
             const rootOssFileName = window.location.hash.slice(1)
             const rootDirElemUuid = generateUUID()
-            dirElemUuid2ossName[rootDirElemUuid] = rootOssFileName;
+            fetch(
+                OSS_URL+rootOssFileName,
+                {
+                    method: "GET",
+                }
+            ).then(async (resp) => {
+                return JSON.parse(await resp.text())
+            }).then((data) => {
+                /** @type {Record<string, string>} */
+                let dirs = data.directories
+                /** @type {Record<string, string>} */
+                let files = data.files
+
+                const listGroupElem = document.getElementById("list-group")
+                for (let dirsKey in dirs) {
+                    // TODO(unybhgfd)
+                }
+            })
         });
-
-        $(document).on("click", ".btn-dir", async function () {
-            console.log("点击了带.btn-dir类的元素", this)
-            /** @type {HTMLDivElement} */
-            let targetElem = this.parentElement.children[1]
-            if (!elemHasClass(targetElem, "no-visited-dir")) return
-            elemRemoveClass(targetElem, "no-visited-dir")
-            let uuid = targetElem.id
-
-            targetElem.classList.add("collapse")
-            this.setAttribute("data-toggle", "collapse")
-            this.setAttribute("data-target", "#" + uuid)
-
-            /** @type {{files: Record<string, string>, directories: Record<string, string>}} */
-            let resp = await (await fetch(
-                "https://livefile.xesimg.com/programme/python_assets/" + dirElemUuid2ossName[uuid]
-            )).json()
-
-            for (let i in resp["directories"]) {
-                let u = generateUUID()
-                dirElemUuid2ossName[u] = resp["directories"][i]
-                targetElem.insertAdjacentElement("beforeend", generateDirectoryElement(u, i))
-            }
-            await wait(100)
-            $(uuid).collapse("show")
-        })
     </script>
 
-    <div id="file-tree" class="col list-group" style="height: 2rch!important;">
-        <div class="row flex-row">
-            <button type="button" class="btn btn-outline-dark pl-1 pt-0 btn-dir"
-                    style="width: 1.5rem; height: 1.5rem;" title="button">
-                <img src="https://livefile.xesimg.com/programme/python_assets/567eb7b5df24e99f9fe7fe4b1b0a40de.svg"
-                     alt="img" style="width: 1rem; height: 1rem">
-            </button>
-            <div class="file-tree-right p-0 ml-1 col list-group">
-                <p>a</p>
-            </div>
+    <div class="card">
+        <div class="list-group list-group-flush" id="list-group">
         </div>
     </div>
 </div>
