@@ -48,7 +48,7 @@
                     <label for="inp-name"></label>
                     <input id="inp-name" type="text" class="form-control" placeholder="用户名">
                     <script>
-                        document.getElementById("inp-name").maxLength = xesPubKeyProjOptionsLengthLimit[1]["userName"]
+                        document.getElementById("inp-name").maxLength = xesPubKeyProjProfileLengthLimit[1]["userName"]
                     </script>
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" id="saveUserName">保存</button>
@@ -126,8 +126,8 @@
 
 
                     /** @type {Promise<UserInfoJson>} */
-                    let pubKeyOptions = (async function () {
-                        let opt = await xesPubKeyProjGetOption(localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID))
+                    let pubKeyProfile = (async function () {
+                        let opt = await xesPubKeyProjGetProfile(localStorage.getItem(idxLS_XES_PUBKEY_PROJ_ID))
                         if (opt === null) {
                             opt = defaultUserInfo
                         }
@@ -135,7 +135,7 @@
                     })()
                     /** @type {Promise<string> | string} */
                     let avatarFileName = (async function () {
-                        return (await pubKeyOptions)["userAvatarFileName"].toString()
+                        return (await pubKeyProfile)["userAvatarFileName"].toString()
                     })()
 
 
@@ -198,7 +198,7 @@
                               style="max-height: 32rch; height: 10rch; min-height: 10rch"
                               id="inp-desc"></textarea>
                     <script>
-                        document.getElementById("inp-desc").maxLength = xesPubKeyProjOptionsLengthLimit[1]["userDesc"]
+                        document.getElementById("inp-desc").maxLength = xesPubKeyProjProfileLengthLimit[1]["userDesc"]
                     </script>
                 </div>
                 <div class="input-group-append">
@@ -241,7 +241,7 @@
                         ]
                     ]
                     // 填充用户信息
-                    pubKeyOptions.then(function (resolve) {
+                    pubKeyProfile.then(function (resolve) {
                         formDct.map(function (value) {
                             if (value[2] !== "userAvatarFileName") {
                                 value[3].value = resolve[value[2]]
@@ -256,18 +256,18 @@
                     })
                     formDct.map(function (value) {
                         value[0].addEventListener("click", async function () {
-                            let opt = await pubKeyOptions
+                            let opt = await pubKeyProfile
                             let val = await value[1]()
                             let key = value[2]
                             opt[key] = val
-                            pubKeyOptions = (async () => opt)()
+                            pubKeyProfile = (async () => opt)()
                             if (
-                                val.length < xesPubKeyProjOptionsLengthLimit[0][key]
-                                    || val.length > xesPubKeyProjOptionsLengthLimit[1][key]
+                                val.length < xesPubKeyProjProfileLengthLimit[0][key]
+                                    || val.length > xesPubKeyProjProfileLengthLimit[1][key]
                             ) {
-                                alert(`${userInfoTextMap[key]}的长度必须在${xesPubKeyProjOptionsLengthLimit[0][key]}字符到${xesPubKeyProjOptionsLengthLimit[1][key]}字符之间`)
+                                alert(`${userInfoTextMap[key]}的长度必须在${xesPubKeyProjProfileLengthLimit[0][key]}字符到${xesPubKeyProjProfileLengthLimit[1][key]}字符之间`)
                             } else {
-                                await xesPubKeyProjSetOption(await pubKeyOptions)
+                                await xesPubKeyProjSetProfile(await pubKeyProfile)
                             }
                         })
                     })

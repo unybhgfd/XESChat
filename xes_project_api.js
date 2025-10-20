@@ -12,6 +12,7 @@
  *   @config {string} data.xml 作品内容(即代码)
  *   @config {string} data.user_id
  *   @config {string} data.topic_id
+ *   @config {string} data.name 作品名称
  */
 
 /**
@@ -20,6 +21,10 @@
  * @returns {Promise<ProjData>} projData
  */
 async function xesProjectView(projId) {
+    if (projId === xesProjectView.xesProjectViewCacheId_) return xesProjectView.xesProjectViewCacheData_;
+    /**
+     * @type ProjData
+     */
     let resp = await (
         await fetch(
             "https://code.xueersi.com/api/compilers/v2/"
@@ -36,8 +41,15 @@ async function xesProjectView(projId) {
     if (resp["stat"] !== 1) {
         throw resp
     }
+    xesProjectView.xesProjectViewCacheId_ = projId;
+    xesProjectView.xesProjectViewCacheData_ = resp;
     return resp
 }
+/**
+ * @type {null | ProjData}
+ */
+xesProjectView.xesProjectViewCacheData_ = null
+
 
 /**
  * 新建cpp作品
@@ -124,6 +136,7 @@ async function xesCppProjSave(projId, projName, projXml) {
     if (resp_data["status"] !== 1) {
         throw resp_data
     }
+    if (xesProjectView.xesProjectViewCacheId_ === projId) xesProjectView.xesProjectViewCacheId_ = 0;
 }
 
 /**

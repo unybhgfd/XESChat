@@ -57,6 +57,7 @@
                                 localStorage.setItem(idxLS_XES_SEC_KEY_WIF, keyPair.toWIF())
                                 await xesSecKeyProjSetWif(search_result)
                             }
+                            localStorage.setItem(idxLS_XES_SEC_KEY_PROJ_ID, search_result.toString())
                             break secKeyBlock
                         }
                         // 没有搜到私钥作品
@@ -65,7 +66,10 @@
                         }
                         console.log("需要新建私钥作品")
                         try {
-                            await xesSecKeyProjCreate(await genWifAesHex())
+                            localStorage.setItem(
+                                idxLS_XES_SEC_KEY_PROJ_ID,
+                                await xesSecKeyProjCreate(await genWifAesHex())
+                            )
                         } catch (e) {
                             console.assert(e["status_code"] === 400)
                             break mainBlock

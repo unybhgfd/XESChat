@@ -13,13 +13,13 @@
 
 /**
  * 设置公钥作品中的用户信息
- * @param {UserInfoJson} options
+ * @param {UserInfoJson} profile
  * @returns {Promise<void>}
  */
-async function xesPubKeyProjSetOption(
-    options
+async function xesPubKeyProjSetProfile(
+    profile
 ) {
-    await xesPubKeyProjSetOptionByString(JSON.stringify(options))
+    await xesPubKeyProjSetProfileByString(JSON.stringify(profile))
 }
 
 /** @type {[
@@ -36,7 +36,7 @@ async function xesPubKeyProjSetOption(
  *     }
  * ]}
  * */
-const xesPubKeyProjOptionsLengthLimit = [
+const xesPubKeyProjProfileLengthLimit = [
     { // 下限, 单位: 字符
         userName: 1,
         userAvatarFileName: 36,
@@ -54,18 +54,18 @@ const xesPubKeyProjOptionsLengthLimit = [
  * @param projId
  * @returns {Promise<null | UserInfoJson>}
  */
-async function xesPubKeyProjGetOption(projId) {
+async function xesPubKeyProjGetProfile(projId) {
     try {
-        let data = JSON.parse(await xesPubKeyProjGetOptionString(projId))
+        let data = JSON.parse(await xesPubKeyProjGetProfileString(projId))
         if (
-            data["userName"].length <= xesPubKeyProjOptionsLengthLimit[1]["userName"]
-            && data["userName"].length >= xesPubKeyProjOptionsLengthLimit[0]["userName"]
-            && data["userAvatarFileName"].length <= xesPubKeyProjOptionsLengthLimit[1]["userAvatarFileName"]
-            && data["userAvatarFileName"].length >= xesPubKeyProjOptionsLengthLimit[0]["userAvatarFileName"]
-            && data["userGender"].length <= xesPubKeyProjOptionsLengthLimit[1]["userGender"]
-            && data["userGender"].length >= xesPubKeyProjOptionsLengthLimit[0]["userGender"]
-            && data["userDesc"].length <= xesPubKeyProjOptionsLengthLimit[1]["userDesc"]
-            && data["userDesc"].length >= xesPubKeyProjOptionsLengthLimit[0]["userDesc"]
+            data["userName"].length <= xesPubKeyProjProfileLengthLimit[1]["userName"]
+            && data["userName"].length >= xesPubKeyProjProfileLengthLimit[0]["userName"]
+            && data["userAvatarFileName"].length <= xesPubKeyProjProfileLengthLimit[1]["userAvatarFileName"]
+            && data["userAvatarFileName"].length >= xesPubKeyProjProfileLengthLimit[0]["userAvatarFileName"]
+            && data["userGender"].length <= xesPubKeyProjProfileLengthLimit[1]["userGender"]
+            && data["userGender"].length >= xesPubKeyProjProfileLengthLimit[0]["userGender"]
+            && data["userDesc"].length <= xesPubKeyProjProfileLengthLimit[1]["userDesc"]
+            && data["userDesc"].length >= xesPubKeyProjProfileLengthLimit[0]["userDesc"]
         ) {
             return data
         }
@@ -90,4 +90,20 @@ const userInfoTextMap = {
     userAvatarFileName: "用户头像文件名",
     userGender: "用户性别",
     userDesc: "用户个人介绍"
+}
+
+
+/**
+ * @typedef {{
+ *     pan: Record<string, string>
+ * }} UserSecOptions
+ */
+
+/**
+ * 设置secOptions
+ * @param {number} secKeyProjId
+ * @param {UserSecOptions} options
+ */
+async function xesSecKeyProjectSetSecOptions(secKeyProjId, options) {
+    return xesSecKeyProjSetSecOptionsByString(secKeyProjId, JSON.stringify((options)))
 }

@@ -27,12 +27,14 @@ function wait(ms) {
 
 // localStorage(LS)和sessionStorage(SS)所有的键(idx)
 const idxLS_XES_SEC_KEY_WIF = "xesChatSecKeyWIF"
+const idxLS_XES_SEC_KEY_PROJ_ID = "xesChatSecKeyProjId"
 const idxLS_XES_PUBKEY_HEX = "xesChatPubKey"
 const idxLS_XES_PUBKEY_PROJ_ID = "xesChatPubKeyProjId"
 const idxName_secKeyProjName = "[XESChat]已安全加密的个人信息"
 const idxName_pubKeyProjName = "[XESChat]XES chat身份验证信息"
 const idxSS_XES_USER_INFO_JSON_STRING = "xesUserInfoJsonString"
 const idxOther_userAvatarXOssProcessParam = "image/resize,m_fill,w_160,h_160,limit_0/format,webp"
+
 /**
  * @type {null | {
  *     create_time: string,
