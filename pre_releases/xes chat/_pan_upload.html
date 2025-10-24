@@ -29,7 +29,7 @@
 
     <div class="input-group-sm">
         <div class="custom-file">
-            <input type="file" class="custom-file-input" id="file-input" webkitdirectory multiple disabled>
+            <input type="file" class="custom-file-input" id="file-input" webkitdirectory multiple>
             <label class="custom-file-label" for="file-input" id="file-input-label">选择要上传的文件夹</label>
         </div>
     </div>
@@ -115,6 +115,7 @@
 
                 // 添加文件到当前目录
                 const fileName = segments[segments.length - 1];
+                sizeTotal += file.size;
                 parent.files.push({ name: fileName, file });
             }
 
@@ -157,7 +158,6 @@
             )
             fileGettingParams[uuid] = false
             fileSize[uuid] = file.size
-            sizeTotal += file.size
             while (!fileGettingParams[uuid]) {
                 await new Promise(resolve => setTimeout(resolve, 50))
             }
@@ -189,6 +189,7 @@
             }
         })
 
+        let uploadResult = null
         document.getElementById('file-input').addEventListener('change', async (event) => {
             document.getElementById('file-input').disabled = true
             const fileList = event.target.files;
@@ -201,7 +202,6 @@
             let directoryData = {files: {}, directories: {}}
             let currentPath = []
             let uploadDirectoryDone = false
-            let uploadResult = null
             let uploadResultName = null
 
             traverseDirectoryDFS(fileList, async (file, path, forward, back) => {
@@ -247,6 +247,7 @@
             document.getElementById("progress-bar-div").style.display = "none"
 
             // 上传完成 (uploadResult)
+            // TODO(unybhgfd): tmd为什么这里没显示啊
             console.log("上传完成", uploadResult)
             document.getElementById("file-input-label").innerText = "还需上传请刷新页面"
             $("#upload-result-collapse").collapse("show")
@@ -261,7 +262,10 @@
                 <button type="button" class="btn btn-secondary" id="copy-share-link-btn">复制分享链接(任何人都能访问)</button>
                 <script>
                     document.getElementById("copy-share-link-btn").addEventListener("click", async function () {
-                        await navigator.clipboard.writeText("") // TODO: 完成pan_viewer实现这里
+                        await navigator.clipboard.writeText(
+                            "https://livefile.xesimg.com/programme/python_assets/137b00cbebc2bbea75d96e2a7a9341ed.html?dirName="
+                            + encodeURI(uploadResult) // pan_viewer
+                        )
                     })
                 </script>
                 <button type="button" class="btn btn-secondary" disabled>保存到网盘</button>

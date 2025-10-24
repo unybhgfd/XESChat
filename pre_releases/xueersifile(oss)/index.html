@@ -57,19 +57,10 @@ UPLOADER
         }
     }, false)
 
-    if (document.readyState !== "loading") {
-        window.parent.postMessage(
-            {'ready': true, 'XESChat': true},
-            "https://code.xueersi.com"
-        )
-    } else {
-        document.addEventListener("load", () => {
-            window.parent.postMessage(
-                {'ready': true, 'XESChat': true},
-                "https://code.xueersi.com"
-            )
-        })
-    }
+    window.parent.postMessage(
+        {'ready': true, 'XESChat': true},
+        "https://code.xueersi.com"
+    )
 </script>
 </body>
 </html>

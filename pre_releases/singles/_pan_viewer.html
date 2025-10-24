@@ -1,5 +1,5 @@
-<!-- 暂停开发, 先做完重要功能再说 -->
 <!-- https://livefile.xesimg.com/programme/python_assets/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.html#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxx_xxxxxxxxxxxxx -->
+<!-- https://livefile.xesimg.com/programme/python_assets/137b00cbebc2bbea75d96e2a7a9341ed.html （修改后记得重新上传） 20251024 -->
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -15,7 +15,7 @@
     <!-- catppuccin-icons_data.js -->
     <script src="https://livefile.xesimg.com/programme/python_assets/4be1829fabdb641338f00a0c0d189a33.js"></script>
 
-    <title>XESChat文件查看</title>
+    <title>文件查看</title>
 </head>
 <body>
 <div class="container">
@@ -41,30 +41,52 @@
         function getFileIconUrl(fileName) {
             let icon = OSS_URL+"567eb7b5df24e99f9fe7fe4b1b0a40de.svg"
             if (fileName2Icon[fileName]) {
-                icon = OSS_URL + folderName2Icon[fileName]
+                icon = OSS_URL + fileName2Icon[fileName]
             } else {
                 let exts = fileName.split(".")
                 if (exts.length > 1) {
                     let fileExt = exts[exts.length-1]
                     if (fileExtension2Icon[fileExt]) {
-                        icon = OSS_URL + folderName2Icon[fileExt]
+                        icon = OSS_URL + fileExtension2Icon[fileExt]
                     }
                 }
             }
             return icon
         }
 
-        function generateDirElem(dirData) {
-            let e = document.createElement("div")
-            // TODO(unybhgfd)
+        function generateDirElem(dirName) {
+            let dirElem = document.createElement("a")
+            dirElem.className = "list-group-item list-group-item-action"
+            dirElem.innerHTML = `
+            <span class="d-inline">
+                <img alt="img" src="${getDirIconUrl(dirName)}">
+            </span>
+            <pre class="d-inline"></pre>
+            `
+            dirElem.children[1].innerText = dirName
+            return dirElem
+        }
+
+        function generateFileElem(fileName) {
+            let fileElem = document.createElement("a")
+            fileElem.className = "list-group-item list-group-item-action"
+            fileElem.innerHTML = `
+            <span class="d-inline">
+                <img alt="img" src="${getFileIconUrl(fileName)}">
+            </span>
+            <pre class="d-inline"></pre>
+            `
+            fileElem.children[1].innerText = fileName
+            return fileElem
         }
 
         /** @type {Record<string, string>} */
         $(document).ready(function () {
-            // TODO
-            // example: root="rules" #d70a40789642a0fac5a4267e8803c88b.2dda_1755690656973
-            const rootOssFileName = window.location.hash.slice(1)
-            const rootDirElemUuid = generateUUID()
+            // example: ?dirName=898b0d1984b681f0a1bac9536297c29f.0964_1761281552806
+            const rootOssFileName = (
+                new window.URL(document.location.href)
+            ).searchParams.get("dirName")
+
             fetch(
                 OSS_URL+rootOssFileName,
                 {
@@ -79,8 +101,15 @@
                 let files = data.files
 
                 const listGroupElem = document.getElementById("list-group")
-                for (let dirsKey in dirs) {
-                    // TODO(unybhgfd)
+                for (let key in dirs) {
+                    let e = generateDirElem(key)
+                    e.href = "?dirName=" + encodeURI(dirs[key])
+                    listGroupElem.append(e)
+                }
+                for (let key in files) {
+                    let e = generateFileElem(key)
+                    e.href = OSS_URL + files[key]
+                    listGroupElem.append(e)
                 }
             })
         });
