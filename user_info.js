@@ -103,7 +103,18 @@ const userInfoTextMap = {
  * 设置secOptions
  * @param {number} secKeyProjId
  * @param {UserSecOptions} options
+ * @private
  */
-async function xesSecKeyProjectSetSecOptions(secKeyProjId, options) {
+async function xesSecKeyProjectSetSecOptions_(secKeyProjId, options) {
     return xesSecKeyProjSetSecOptionsByString(secKeyProjId, JSON.stringify((options)))
 }
+
+// /**
+//  * 获取secOptions
+//  * @param {number} secKeyProjId
+//  * @param {UserSecOptions} options
+//  * @private
+//  */
+// async function xesSecKeyProjectSetSecOptions_(secKeyProjId, options) {
+//     return xesSecKeyProjSetSecOptionsByString(secKeyProjId, JSON.stringify((options)))
+// }
