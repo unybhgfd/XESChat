@@ -12,7 +12,7 @@
                 if (elemB.innerText === "帮助中心") {
                     elemA.innerText = "社区公约 | 帮助中心";
                     elemB.innerText = "XES chat";
-                    elemB.href = "https://code.xueersi.com/xes%20chat";
+                    elemB.href = "https://code.xueersi.com/xes_chat";
                 }
             }
         } catch (e) {}

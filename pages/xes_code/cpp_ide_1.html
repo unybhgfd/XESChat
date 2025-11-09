@@ -108,7 +108,7 @@
                     if (xesPubKeyProjectGetKey(await xesProjectView(pubKeyProjId)) !== pubKeyHex) {
                         await xesPubKeyProjSetPubKey(pubKeyHex)
                     }
-                    window.location = "/xes%20chat"
+                    window.location = "/xes_chat"
                     return
                 }
             } catch (e) {
@@ -129,13 +129,13 @@
     <br><br><hr>
     <ul class="row nav justify-content-center">
         <li class="nav-item">
-            <a class="nav-link disabled" href="/xes chat">主页</a>
+            <a class="nav-link disabled" href="/xes_chat">主页</a>
         </li>
         <li class="nav-item">
             <a class="nav-link disabled" href="/ide/code/1?xes_chat=true">登录</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link disabled" href="/xes chat/account">账号管理</a>
+            <a class="nav-link disabled" href="/xes_chat/account">账号管理</a>
         </li>
     </ul>
 </div></body>
