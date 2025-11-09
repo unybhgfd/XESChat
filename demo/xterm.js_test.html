@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!--    <link rel="stylesheet" href="./bootstrap.min.css">-->
+<!--    <script src="./jquery-3.3.1.slim.min.js"></script>-->
+<!--    <script src="./popper.min.js"></script>-->
+<!--    <script src="./bootstrap.min.js"></script>-->
+
+    <script src="../modules/xterm.js"></script>
+
+    <title>XTerm.js测试</title>
+</head>
+<body><div class="container">
+    <div id="xterm-container"></div>
+    <script>
+        let term = new Terminal({
+            theme: {
+                foreground: "#000000",
+                background: "#ffffff"
+            },
+            cursorBlink: true,
+            scrollBack: 10_000
+        });
+        term.open(document.getElementById("xterm-container"));
+        term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $")
+    </script>
+</div></body>
+</html>

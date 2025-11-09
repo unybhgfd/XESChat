@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" href="../modules/bootstrap.min.css">
+        <script src="./jquery-3.3.1.slim.min.js"></script>
+        <script src="../modules/popper.min.js"></script>
+        <script src="../modules/bootstrap.min.js"></script>
+
+    <script src="../modules/peerjs.min.js"></script>
+
+    <title>XTerm.js测试</title>
+</head>
+<body><div class="container">
+    <div id="xterm-container"></div>
+    <script>
+        const peer = new Peer();
+        const offer = `{'type': 'offer', 'sdp': 'v=0\\r\\no=- 3971589518 3971589518 IN IP4 0.0......a=setup:actpass\\r\\n'}`
+        peer.on('open',       id =>   console.log("Peer ID:",                id));
+        peer.on('connection', conn => console.log('Connection established:', conn));
+        peer.on('call',       call => console.log('Incoming call:',          call));
+
+        const peerConn = peer.connect();
+        // TODO
+    </script>
+</div></body>
+</html>
