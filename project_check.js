@@ -145,11 +145,9 @@ function hexToUint8Array(hexString) {
  */
 async function xesChatProjectGetVal(projId, fieldName, aesKey, aesIterations=100_00_00) {
     return await AESDecrypt(
-        (
-            await xesProjectView(projId)
-        )["data"]["xml"].match(
-            new RegExp(fieldName+"=[^\n]{2,}")
-        )[0].slice(fieldName.length+1),
+        (await xesProjectView(projId)).data.xml
+            .match(new RegExp(fieldName+"=[^\n]{2,}"))[0]
+            .slice(fieldName.length+1),
         aesKey,
         aesIterations
     )
