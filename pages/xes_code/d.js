@@ -73,12 +73,7 @@ setInterval(async function () {
     }.bind(this), 20_000);
 })();
 
-// 零宽字符编解码
-/*
-XESChat零宽字符编码
-XesChat => Xe, C ==(Atomic number of ...)=> 54, 12 ==(Binary of ...)=> 11 01 10, 11 00
-==(...th element of ZERO_WIDTH_MAP)=> "\u2060\u200C\u200D", "\u2060\u200B"
- */
+// 零宽字符隐写编解码
 (async function () {
     const md5ZeroWidthEncoder = {
         ZERO_WIDTH_MAP : {
@@ -93,8 +88,19 @@ XesChat => Xe, C ==(Atomic number of ...)=> 54, 12 ==(Binary of ...)=> 11 01 10,
           '\u200D': '10',
           '\u2060': '11'
         },
-        ZERO_WIDTH_RE: /(?<=\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u2060\u200B)/, // 在字符串中匹配
-        ZERO_WIDTH_RE_WHOLE: /(?<=^\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u2060\u200B$)/, // 匹配整个字符串(长度为69)
+
+        // 在字符串中匹配, 忽略prefix和suffix
+        ZERO_WIDTH_RE: /(?<=\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u2060\u200B)/,
+        // 匹配包含prefix和suffix的整个字符串(长度为69)
+        ZERO_WIDTH_RE_WHOLE: /(?<=^\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u2060\u200B$)/,
+        // 在字符串中匹配, 包含prefix和suffix
+        ZERO_WIDTH_RE_MORE: /\u2060\u200C\u200D[\u200B\u200C\u200D\u2060]{64}\u2060\u200B/,
+
+        /*
+        为什么要选这五个字符? 请看vcr:
+        XesChat => Xe, C ==(Atomic number of ...)=> 54, 12 ==(Binary of ...)=>
+            11 01 10, 11 00 ==(...th element of ZERO_WIDTH_MAP)=> "\u2060\u200C\u200D", "\u2060\u200B"
+         */
         ZERO_WIDTH_STR_PREFIX: "\u2060\u200C\u200D",
         ZERO_WIDTH_STR_SUFFIX: "\u2060\u200B",
 
@@ -136,13 +142,14 @@ XesChat => Xe, C ==(Atomic number of ...)=> 54, 12 ==(Binary of ...)=> 11 01 10,
          */
         toMd5HexStr(zeroWidthStr) {
           // 验证输入格式
+          let idxStart = 3; // this.ZERO_WIDTH_STR_PREFIX.length, 同时处理带prefix+suffix和不带的
           if (!this.ZERO_WIDTH_RE_WHOLE.test(zeroWidthStr)) {
-            throw new Error('Invalid zero-width characters');
+            idxStart = 0;
           }
 
           // 将零宽字符转换回二进制
           let binary = '';
-          for (let i = 0; i < zeroWidthStr.length; i++) {
+          for (let i = idxStart;  i < idxStart+64; i++) {
             const zeroWidthChar = zeroWidthStr[i];
             binary += this.REVERSE_ZERO_WIDTH_MAP[zeroWidthChar];
           }
@@ -158,6 +165,80 @@ XesChat => Xe, C ==(Atomic number of ...)=> 54, 12 ==(Binary of ...)=> 11 01 10,
           return md5Hex;
         }
     };
+    const XesOssStringUploader = {
+        OSS_URL: "https://static0.xesimg.com/programme/python_assets/",
+
+        /**
+         * 生成随机文件名, 应该立即使用
+         * @returns {string}
+         */
+        randomFilename() {
+            const hexDigits = "0123456789abcdefghijklmnopqrstuvwxyz"
+            let s = []
+            for (let i = 0; i < 9; i++) {
+                s[i] = hexDigits[Math.floor(Math.random() * 0x10)]
+            }
+            s[4] = "."
+            return s.join('') + "_" + Date.now().toString()
+        },
+
+        /**
+         * @param {string} md5
+         * @param {string} filename
+         */
+        async _getParams(md5, filename) {
+            let resp = await fetch("https://code.xueersi.com/api/assets/v2/get_tss_upload_params"
+                + "?scene=offline_python_assets"
+                + `&md5=${md5}&filename=${filename}`);
+            return await resp.json();
+        },
+
+        /**
+         * @param {string} content
+         * @param {string?} filename
+         * @param {boolean?} hashOnly 若为true, 返回值为md5 hex string而非文件名
+         * @returns {Promise<string>} 文件名或md5
+         */
+        async uploadString(content, filename=XesOssStringUploader.randomFilename(), hashOnly=false) {
+            let md5 = SparkMD5.hash(content)
+            let params = (await this._getParams(md5, filename))["data"]
+            console.assert(params["url"].startsWith(this.OSS_URL))
+            params["headers"]["Content-Type"] = "application/octet-stream"
+            await fetch(params["host"], {
+                method: 'PUT',
+                body: content,
+                headers: params["headers"]
+            })
+            if (hashOnly) return md5
+            return params["url"].slice(51) // this.OSS_URL.length === 51
+        }
+    }
+    const XESChatZeroWidthEncrypter = {
+        /**
+         * @param {string} str 可能带隐写信息的字符串
+         * @returns {Promise<string>} 结果, str不含隐写信息则报错
+         */
+        async getHiddenStr(str) {
+            let idx = str.match(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE).index;
+            str = str.slice(idx, idx+69);
+            return await (await fetch(
+                XesOssStringUploader.OSS_URL
+                + md5ZeroWidthEncoder.toMd5HexStr(str)
+                + ".XESChatCommentMsg"
+            )).text();
+        },
+
+        /**
+         * 将信息编码成零宽
+         * @param {string} str
+         */
+        async encode(str) {
+            return md5ZeroWidthEncoder.toZeroWidth(
+                await XesOssStringUploader.uploadString(
+                    str, ".XESChatCommentMsg", true
+                ));
+        }
+    }
     setInterval(async function () {
         let nodeList;
         try {
