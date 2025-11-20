@@ -95,26 +95,25 @@ const userInfoTextMap = {
 
 /**
  * @typedef {{
- *     pan: Record<string, string>
+ *     pan: {
+ *         files: Record<string, string>,
+ *         directories: Record<string, string>
+ *     }
  * }} UserSecOptions
  */
 
 /**
- * 设置secOptions
+ * 设置secKey option
+ * @template {keyof UserSecOptions} T
  * @param {number} secKeyProjId
- * @param {UserSecOptions} options
- * @private
+ * @param {T} optionsLabelName option的键名
+ * @param {typeof UserSecOptions[T]} optionVal 键的新值
+ * @returns {Promise<void>}
  */
-async function xesSecKeyProjectSetSecOptions_(secKeyProjId, options) {
-    return xesSecKeyProjSetSecOptionsByString(secKeyProjId, JSON.stringify((options)))
+async function xesSecKeyProjectSetSecOption(secKeyProjId, optionsLabelName, optionVal) {
+    let opt = JSON.stringify(await xesSecKeyProjGetSecOptionsString(secKeyProjId));
+    opt[optionsLabelName] = optionVal;
+    return xesSecKeyProjSetSecOptionsByString(
+        secKeyProjId, opt
+    );
 }
-
-// /**
-//  * 获取secOptions
-//  * @param {number} secKeyProjId
-//  * @param {UserSecOptions} options
-//  * @private
-//  */
-// async function xesSecKeyProjectSetSecOptions_(secKeyProjId, options) {
-//     return xesSecKeyProjSetSecOptionsByString(secKeyProjId, JSON.stringify((options)))
-// }

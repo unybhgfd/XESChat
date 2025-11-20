@@ -145,12 +145,23 @@
         }
 
         /**
+         * 等待
+         * @param {number} ms
+         */
+        function wait(ms) {
+            return new Promise(resolve => {
+                setTimeout(resolve, ms)
+            })
+        }
+
+        /**
          * @param {File} file
          * @param {string} uuid
          * @returns {Promise<string>}
          */
         async function uploadFile(file, uuid) {
             //  TODO: 文件过大需要切片
+            while (Object.getOwnPropertyNames(fileUploading).length >= 8) await wait(100);
             document.getElementById("iframeElement").contentWindow.postMessage(
                 {
                     file, uuid,
