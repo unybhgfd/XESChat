@@ -91,18 +91,18 @@ setInterval(async function () {
             },
 
             // 在字符串中匹配, 忽略prefix和suffix
-            ZERO_WIDTH_RE: /(?<=\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u2060\u200B)/,
+            ZERO_WIDTH_RE: /(?<=\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u200C\u200D)/,
             // 匹配包含prefix和suffix的整个字符串(长度为69)
-            ZERO_WIDTH_RE_WHOLE: /(?<=^\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u2060\u200B$)/,
+            ZERO_WIDTH_RE_WHOLE: /(?<=^\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u200C\u200D$)/,
             // 在字符串中匹配, 包含prefix和suffix
-            ZERO_WIDTH_RE_MORE: /\u2060\u200C\u200D[\u200B\u200C\u200D\u2060]{64}\u2060\u200B/,
+            ZERO_WIDTH_RE_MORE: /\u2060\u200C\u200D[\u200B\u200C\u200D\u2060]{64}\u200C\u200D/,
 
             /*
-            XesChat => Xe, C ==(Atomic number of ...)=> 54, 12 ==(Binary of ...)=>
-                11 01 10, 11 00 ==(...th element of ZERO_WIDTH_MAP)=> "\u2060\u200C\u200D", "\u2060\u200B"
+            XesChat => Xe, C ==(Atomic number of ...)=> 54, 6 ==(Binary of ...)=>
+                11 01 10, 01 10 ==(...th element of ZERO_WIDTH_MAP)=> "\u2060\u200C\u200D", "\u200C\u200D"
              */
             ZERO_WIDTH_STR_PREFIX: "\u2060\u200C\u200D",
-            ZERO_WIDTH_STR_SUFFIX: "\u2060\u200B",
+            ZERO_WIDTH_STR_SUFFIX: "\u200C\u200D",
 
             /**
              * 将MD5 hex字符串转换为零宽字符字符串
@@ -142,7 +142,7 @@ setInterval(async function () {
              */
             toMd5HexStr(zeroWidthStr) {
               // 验证输入格式
-              let idxStart = 3; // this.ZERO_WIDTH_STR_PREFIX.length, 同时处理带prefix+suffix和不带的
+              let idxStart = 3; // this.ZERO_WIDTH_STR_PREFIX.length, 这样能同时处理带prefix+suffix和不带的
               if (!this.ZERO_WIDTH_RE_WHOLE.test(zeroWidthStr)) {
                 idxStart = 0;
               }
@@ -165,7 +165,7 @@ setInterval(async function () {
               return md5Hex;
             }
         };
-        const XesOssStringUploader = {
+        const xesOssStringUploader = {
             OSS_URL: "https://static0.xesimg.com/programme/python_assets/",
 
             /**
@@ -199,7 +199,11 @@ setInterval(async function () {
              * @param {boolean?} hashOnly 若为true, 返回值为md5 hex string而非文件名
              * @returns {Promise<string>} 文件名或md5
              */
-            async uploadString(content, filename=XesOssStringUploader.randomFilename(), hashOnly=false) {
+            async uploadString(
+                content,
+                filename=xesOssStringUploader.randomFilename(),
+                hashOnly=false
+            ) {
                 let md5 = SparkMD5.hash(content)
                 let params = (await this._getParams(md5, filename))["data"]
                 console.assert(params["url"].startsWith(this.OSS_URL))
@@ -213,7 +217,7 @@ setInterval(async function () {
                 return params["url"].slice(51) // this.OSS_URL.length === 51
             }
         }
-        const XESChatZeroWidthEncrypter = {
+        const xeschatZeroWidthEncrypter = {
             /**
              * @param {string} str 可能带隐写信息的字符串
              * @returns {Promise<string>} 结果, str不含隐写信息则报错
@@ -222,7 +226,7 @@ setInterval(async function () {
                 let idx = str.match(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE).index;
                 str = str.slice(idx, idx+69);
                 return await (await fetch(
-                    XesOssStringUploader.OSS_URL
+                    xesOssStringUploader.OSS_URL
                     + md5ZeroWidthEncoder.toMd5HexStr(str)
                     + ".XESChatCommentMsg"
                 )).text();
@@ -234,32 +238,62 @@ setInterval(async function () {
              */
             async encode(str) {
                 return md5ZeroWidthEncoder.toZeroWidth(
-                    await XesOssStringUploader.uploadString(
+                    await xesOssStringUploader.uploadString(
                         str, ".XESChatCommentMsg", true
                     ));
             }
         }
         if (document.getElementById("spark-md5") === null) {
+            // spark-md5.min.js
             let elem = document.createElement("script")
             elem.src = "https://livefile.xesimg.com/programme/python_assets/72b9c82c626d0b7091c0a9b71c0d394c.js"
             elem.addEventListener("load", async () => {
+                setInterval(async function () {
+                    let nodeList;
+                    try {
+                        nodeList = document.querySelector("div.compare-comment").querySelectorAll(".comtent-area");
+                    } catch { return; }
+                    for (const element of nodeList) {
+                        let content = element.innerText;
+                        if (md5ZeroWidthEncoder.ZERO_WIDTH_RE.test(content)) {
+                            let hiddenContent = await xeschatZeroWidthEncrypter.getHiddenStr(content);
+                            // TODO: 显示
+                        }
+                    }
 
+                    // "div.comment-con > div.top-comment-box.comment-box" 元素添加XESChat的隐藏信息输入框
+                    if (document.getElementById("xeschat-hidden-msg") === null) {
+                        let elem = document.createElement("div");
+                        elem.innerHTML = `
+                            <textarea
+                             placeholder="在这输入需要隐藏的内容"
+                             style="resize: none; border: none; width: 100% !important; height: 100%;"
+                             id="xeschat-hidden-msg-textarea"
+                             cols="80"></textarea>
+                        `;
+                        elem.style = window.getComputedStyle(
+                            document.querySelector(
+                                "div.top-comment-box.comment-box.login > div.draw-comment > div"));
+                        elem.style.height = "6em";
+                        elem.className = "xes-textarea";
+                        elem.id = "xeschat-hidden-msg";
+                        document.querySelector("div.comment-con > div.top-comment-box.comment-box")
+                            .appendChild(elem);
+
+                        elem = document.createElement("div");
+                        elem.className = "submit-btn";
+                        elem.innerText = "插入隐藏内容";
+                        elem.style = window.getComputedStyle(
+                            document.querySelector("div.comment-con div.submit-btn"));
+                        elem.addEventListener("click", async () => {
+                            // TODO: 实现
+                        });
+                        document.querySelector("div.comment-con > div.top-comment-box.comment-box")
+                            .appendChild(elem);
+                    }
+                }.bind(this), 500);
             })
             document.head.appendChild(elem)
         }
-        setInterval(async function () {
-            let nodeList;
-            try {
-                nodeList = document.querySelector("div.compare-comment").querySelectorAll(".comtent-area");
-            } catch { return; }
-            for (const element of nodeList) {
-                let content = element.innerText;
-                if (md5ZeroWidthEncoder.ZERO_WIDTH_RE.test(content)) {
-                    let hiddenContent = await XESChatZeroWidthEncrypter.getHiddenStr(content);
-                    // TODO: 显示
-                }
-            }
-            // TODO(unybhgfd): "div.comment-con > div.top-comment-box.comment-box" 元素添加XESChat的隐藏信息输入框
-        }, 500);
     }
 })()
