@@ -78,16 +78,16 @@ setInterval(async function () {
     if (document.location.pathname === "/home/project/detail") {
         const md5ZeroWidthEncoder = {
             ZERO_WIDTH_MAP : {
-              '00': '\u200B', // zwsp
-              '01': '\u200C', // zwnj
-              '10': '\u200D', // zwj
-              '11': '\u2060'  // wj
+                '00': '\u200B', // zwsp
+                '01': '\u200C', // zwnj
+                '10': '\u200D', // zwj
+                '11': '\u2060'  // wj
             },
             REVERSE_ZERO_WIDTH_MAP : {
-              '\u200B': '00',
-              '\u200C': '01',
-              '\u200D': '10',
-              '\u2060': '11'
+                '\u200B': '00',
+                '\u200C': '01',
+                '\u200D': '10',
+                '\u2060': '11'
             },
 
             // 在字符串中匹配, 忽略prefix和suffix
@@ -112,27 +112,27 @@ setInterval(async function () {
              * @author DeepSeek-R1, unybhgfd
              */
             toZeroWidth(md5Hex) {
-              // 验证输入格式
-              if (!/^[a-f0-9]{32}$/i.test(md5Hex)) {
-                throw new Error('Invalid MD5 hex string format');
-              }
+                // 验证输入格式
+                if (!/^[a-f0-9]{32}$/i.test(md5Hex)) {
+                    throw new Error('Invalid MD5 hex string format');
+                }
 
-              // 将hex转换为二进制字符串
-              let binary = '';
-              for (let i = 0; i < md5Hex.length; i++) {
-                const hexChar = md5Hex[i];
-                const binaryChar = parseInt(hexChar, 16).toString(2).padStart(4, '0');
-                binary += binaryChar;
-              }
+                // 将hex转换为二进制字符串
+                let binary = '';
+                for (let i = 0; i < md5Hex.length; i++) {
+                    const hexChar = md5Hex[i];
+                    const binaryChar = parseInt(hexChar, 16).toString(2).padStart(4, '0');
+                    binary += binaryChar;
+                }
 
-              // 将二进制转换为零宽字符
-              let zeroWidthStr = '';
-              for (let i = 0; i < binary.length; i += 2) {
-                const bits = binary.substring(i, i + 2);
-                zeroWidthStr += this.ZERO_WIDTH_MAP[bits];
-              }
+                // 将二进制转换为零宽字符
+                let zeroWidthStr = '';
+                for (let i = 0; i < binary.length; i += 2) {
+                    const bits = binary.substring(i, i + 2);
+                    zeroWidthStr += this.ZERO_WIDTH_MAP[bits];
+                }
 
-              return this.ZERO_WIDTH_STR_PREFIX + zeroWidthStr + this.ZERO_WIDTH_STR_SUFFIX;
+                return this.ZERO_WIDTH_STR_PREFIX + zeroWidthStr + this.ZERO_WIDTH_STR_SUFFIX;
             },
 
             /**
@@ -142,28 +142,28 @@ setInterval(async function () {
              * @author DeepSeek-R1, unybhgfd
              */
             toMd5HexStr(zeroWidthStr) {
-              // 验证输入格式
-              let idxStart = 3; // this.ZERO_WIDTH_STR_PREFIX.length, 这样能同时处理带prefix+suffix和不带的
-              if (!this.ZERO_WIDTH_RE_WHOLE.test(zeroWidthStr)) {
-                idxStart = 0;
-              }
+                // 验证输入格式
+                let idxStart = 3; // this.ZERO_WIDTH_STR_PREFIX.length, 这样能同时处理带prefix+suffix和不带的
+                if (!this.ZERO_WIDTH_RE_WHOLE.test(zeroWidthStr)) {
+                    idxStart = 0;
+                }
 
-              // 将零宽字符转换回二进制
-              let binary = '';
-              for (let i = idxStart;  i < idxStart+64; i++) {
-                const zeroWidthChar = zeroWidthStr[i];
-                binary += this.REVERSE_ZERO_WIDTH_MAP[zeroWidthChar];
-              }
+                // 将零宽字符转换回二进制
+                let binary = '';
+                for (let i = idxStart;  i < idxStart+64; i++) {
+                    const zeroWidthChar = zeroWidthStr[i];
+                    binary += this.REVERSE_ZERO_WIDTH_MAP[zeroWidthChar];
+                }
 
-              // 将二进制转换回hex
-              let md5Hex = '';
-              for (let i = 0; i < binary.length; i += 4) {
-                const bits = binary.substring(i, i + 4);
-                const hexChar = parseInt(bits, 2).toString(16);
-                md5Hex += hexChar;
-              }
+                // 将二进制转换回hex
+                let md5Hex = '';
+                for (let i = 0; i < binary.length; i += 4) {
+                    const bits = binary.substring(i, i + 4);
+                    const hexChar = parseInt(bits, 2).toString(16);
+                    md5Hex += hexChar;
+                }
 
-              return md5Hex;
+                return md5Hex;
             }
         };
         const xesOssStringUploader = {
