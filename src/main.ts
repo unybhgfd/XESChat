@@ -1,5 +1,7 @@
 import { doInject } from "./xes-scripts/xes-script.ts"
 import { injectionConfig } from "./injection-config.ts";
+import { createApp } from 'vue';
+import App from './App.vue';
 
 const host = window.location.host
 const path = window.location.pathname
@@ -20,18 +22,21 @@ if (
 
 function startApp() {
     console.log('startApp')
-  //   document.open()
-  //   document.write(`
-  //   <!DOCTYPE html>
-  //   <html>
-  //     <head>
-  //       <meta charset="UTF-8">
-  //       <title>XESChat</title>
-  //     </head>
-  //     <body>
-  //       <div id="app"></div>
-  //     </body>
-  //   </html>
-  // `)
-  //   document.close()
+    if (path === "/xes_chat") {
+        document.open()
+        // TODO: 把App放进去
+        document.write(`
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>XESChat</title>
+            </head>
+            </body>
+        </html>
+        `)
+        const app = document.createElement('div');
+        document.body.append(app);
+        document.close()
+    }
 }

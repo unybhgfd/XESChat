@@ -17,6 +17,8 @@ import vueLogoUrl from './assets/vue.svg';
 </template>
 
 <style scoped>
+@import './style.css';
+
 .logo {
   height: 6em;
   padding: 1.5em;
