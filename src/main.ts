@@ -9,8 +9,8 @@ const search = window.location.search
 
 // 判断当前URL是否在映射中
 if (
-    (host in injectionConfig.pathMap && path in injectionConfig.pathMap[host])
-    && (injectionConfig.needQuery[host]?.[path] && !search.includes('xes_chat=true'))
+    (injectionConfig.pathMap?.[host]?.[path])
+    && (!injectionConfig.needQuery[host]?.[path] || search.includes('xes_chat=true'))
 ) {
     startApp()
 } else {
@@ -21,10 +21,8 @@ if (
 }
 
 function startApp() {
-    console.log('startApp')
     if (path === "/xes_chat") {
         document.open()
-        // TODO: 把App放进去
         document.write(`
         <!DOCTYPE html>
         <html>
@@ -32,11 +30,11 @@ function startApp() {
                 <meta charset="UTF-8">
                 <title>XESChat</title>
             </head>
+            <body>
+                body
             </body>
         </html>
         `)
-        const app = document.createElement('div');
-        document.body.append(app);
         document.close()
     }
 }

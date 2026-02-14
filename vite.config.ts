@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import monkey, {cdn, TampermonkeyUserScript} from 'vite-plugin-monkey';
+import monkey, {cdn, MonkeyUserScript} from 'vite-plugin-monkey';
 import { hostNames } from "./src/injection-config.ts"
 
-let userscriptConfig: TampermonkeyUserScript = {
+let userscriptConfig: MonkeyUserScript = {
     name: "XESChat",
     version: "2026-2-14",
     author: "unybhgfd",
@@ -11,6 +11,7 @@ let userscriptConfig: TampermonkeyUserScript = {
     namespace: 'npm/vite-plugin-monkey',
     match: hostNames.map((s) => `https://${s}/*`),
     noframes: false,
+    "run-at": "document-start"
 }
 
 export default defineConfig({
