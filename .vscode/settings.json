@@ -1,4 +1,5 @@
 {
-    "files.encoding": "utf8",   // 默认编码
-    "editor.editContext": false // 修复输入法问题
+  "files.encoding": "utf8",    // 默认编码
+  "editor.editContext": false, // 修复输入法问题
+  "vue.hover.rich": true
 }
