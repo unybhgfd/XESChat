@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "spark-md5": "^3.0.2",
     "vue": "^3.5.19"
   },
   "devDependencies": {
+    "@types/spark-md5": "^3.0.5",
     "@vitejs/plugin-vue": "^6.0.1",
     "typescript": "^5.9.2",
     "vite": "^7.1.3",

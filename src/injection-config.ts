@@ -4,7 +4,10 @@ export let hostNames = [
     "static0.xesimg.com"
 ]
 
-export let injectionConfig = {
+export let injectionConfig: {
+    needQuery: Record<string, Record<string, boolean>>,
+    pathMap: Record<string, Record<string, string>>
+} = {
     needQuery: {
         "code.xueersi.com": {
             "/ide/code/1": true

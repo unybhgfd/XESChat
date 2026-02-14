@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import monkey, {cdn, TampermonkeyUserScript} from 'vite-plugin-monkey';
-import { hostNames } from "./src/injection_config.ts"
+import { hostNames } from "./src/injection-config.ts"
 
 let userscriptConfig: TampermonkeyUserScript = {
     name: "XESChat",
