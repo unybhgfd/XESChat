@@ -1,17 +1,17 @@
-import {xesOssStringUploader} from "./upload-string.ts";
+import { xesOssStringUploader } from "./upload-string.ts";
 
 export const md5ZeroWidthEncoder = {
     ZERO_WIDTH_MAP: {
-        '00': '\u200B', // zwsp
-        '01': '\u200C', // zwnj
-        '10': '\u200D', // zwj
-        '11': '\u2060'  // wj
+        "00": "\u200B", // zwsp
+        "01": "\u200C", // zwnj
+        "10": "\u200D", // zwj
+        "11": "\u2060", // wj
     },
     REVERSE_ZERO_WIDTH_MAP: {
-        '\u200B': '00',
-        '\u200C': '01',
-        '\u200D': '10',
-        '\u2060': '11'
+        "\u200B": "00",
+        "\u200C": "01",
+        "\u200D": "10",
+        "\u2060": "11",
     },
 
     // 在字符串中匹配, 忽略prefix和suffix
@@ -37,19 +37,19 @@ export const md5ZeroWidthEncoder = {
     toZeroWidth(md5Hex: string): string {
         // 验证输入格式
         if (!/^[a-f0-9]{32}$/i.test(md5Hex)) {
-            throw new Error('Invalid MD5 hex string format');
+            throw new Error("Invalid MD5 hex string format");
         }
 
         // 将hex转换为二进制字符串
-        let binary = '';
+        let binary = "";
         for (let i = 0; i < md5Hex.length; i++) {
             const hexChar = md5Hex[i];
-            const binaryChar = parseInt(hexChar, 16).toString(2).padStart(4, '0');
+            const binaryChar = parseInt(hexChar, 16).toString(2).padStart(4, "0");
             binary += binaryChar;
         }
 
         // 将二进制转换为零宽字符
-        let zeroWidthStr = '';
+        let zeroWidthStr = "";
         for (let i = 0; i < binary.length; i += 2) {
             const bits = binary.substring(i, i + 2);
             zeroWidthStr += this.ZERO_WIDTH_MAP[bits];
@@ -72,14 +72,14 @@ export const md5ZeroWidthEncoder = {
         }
 
         // 将零宽字符转换回二进制
-        let binary = '';
-        for (let i = idxStart;  i < idxStart+64; i++) {
+        let binary = "";
+        for (let i = idxStart; i < idxStart + 64; i++) {
             const zeroWidthChar = zeroWidthStr[i];
             binary += this.REVERSE_ZERO_WIDTH_MAP[zeroWidthChar];
         }
 
         // 将二进制转换回hex
-        let md5Hex = '';
+        let md5Hex = "";
         for (let i = 0; i < binary.length; i += 4) {
             const bits = binary.substring(i, i + 4);
             const hexChar = parseInt(bits, 2).toString(16);
@@ -87,9 +87,8 @@ export const md5ZeroWidthEncoder = {
         }
 
         return md5Hex;
-    }
+    },
 };
-
 
 export const xeschatZeroWidthEncrypter = {
     /**
@@ -98,12 +97,10 @@ export const xeschatZeroWidthEncrypter = {
      */
     async getHiddenStr(str: string): Promise<string> {
         let idx = str.match(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE).index;
-        str = str.slice(idx, idx+69);
-        return await (await fetch(
-            xesOssStringUploader.OSS_URL
-            + md5ZeroWidthEncoder.toMd5HexStr(str)
-            + ".XESChatCommentMsg"
-        )).text();
+        str = str.slice(idx, idx + 69);
+        return await (
+            await fetch(xesOssStringUploader.OSS_URL + md5ZeroWidthEncoder.toMd5HexStr(str) + ".XESChatCommentMsg")
+        ).text();
     },
 
     /**
@@ -111,8 +108,7 @@ export const xeschatZeroWidthEncrypter = {
      */
     async encode(str: string) {
         return md5ZeroWidthEncoder.toZeroWidth(
-            await xesOssStringUploader.uploadString(
-                str, ".XESChatCommentMsg", true
-            ));
-    }
+            await xesOssStringUploader.uploadString(str, ".XESChatCommentMsg", true),
+        );
+    },
 };
