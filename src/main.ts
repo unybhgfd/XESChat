@@ -1,7 +1,7 @@
 import { doInject } from "./xes-scripts/xes-script.ts"
 import { injectionConfig } from "./injection-config.ts";
 import { createApp } from 'vue';
-import App from './App.vue';
+import App from './example.vue';
 
 const host = window.location.host
 const path = window.location.pathname
@@ -31,10 +31,16 @@ function startApp() {
                 <title>XESChat</title>
             </head>
             <body>
-                body
             </body>
         </html>
         `)
         document.close()
+        createApp(App).mount(
+            (() => {
+                const app = document.createElement('div');
+                document.body.append(app);
+                return app;
+            })(),
+        );
     }
 }
