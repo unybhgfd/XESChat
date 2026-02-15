@@ -4,7 +4,7 @@ export async function injectTitle() {
     });
     let TitlePrefix = "";
     let TitleName = document.title;
-    let OriginalTitleSetter = Object.getOwnPropertyDescriptor(Document.prototype, "title").set;
+    let OriginalTitleSetter = Object.getOwnPropertyDescriptor(Document.prototype, "title")?.set;
 
     Object.defineProperty(document, "title", {
         set: function (val) {

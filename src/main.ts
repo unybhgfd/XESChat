@@ -1,7 +1,7 @@
 import { doInject } from "./xes-scripts/xes-script.ts";
 import { injectionConfig } from "./injection-config.ts";
 import { createApp } from "vue";
-import App from "./example.vue";
+import App from "./pages/example.vue";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";

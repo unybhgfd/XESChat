@@ -6,13 +6,13 @@ export const md5ZeroWidthEncoder = {
         "01": "\u200C", // zwnj
         "10": "\u200D", // zwj
         "11": "\u2060", // wj
-    },
+    } as Record<string, string>,
     REVERSE_ZERO_WIDTH_MAP: {
         "\u200B": "00",
         "\u200C": "01",
         "\u200D": "10",
         "\u2060": "11",
-    },
+    } as Record<string, string>,
 
     // 在字符串中匹配, 忽略prefix和suffix
     ZERO_WIDTH_RE: /(?<=\u2060\u200C\u200D)[\u200B\u200C\u200D\u2060]{64}(?=\u200C\u200D)/,
