@@ -15,20 +15,18 @@ let userscriptConfig: MonkeyUserScript = {
 }
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    monkey({
-      entry: 'src/main.ts',
-      userscript: userscriptConfig,
-      server: {
-        open: false,
-      },
-      build: {
-        fileName: "xes-chat.user.js",
-        externalGlobals: {
-          vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js'),
-        },
-      },
-    }),
-  ],
+    plugins: [
+        vue(),
+        monkey({
+            entry: 'src/main.ts',
+            userscript: userscriptConfig,
+            build: {
+                fileName: "xes-chat.user.js",
+                externalGlobals: {
+                    vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js'),
+                    vuetify: cdn.jsdelivr('Vuetify', 'dist/vuetify.min.js'),
+                },
+            },
+        }),
+    ],
 });
