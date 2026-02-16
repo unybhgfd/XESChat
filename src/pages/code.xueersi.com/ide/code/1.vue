@@ -24,7 +24,7 @@ import "vuetify";
               <div
                   class="text-h3 flex-grow-1 text-center"
               >
-                {{ isSelected ? 'chat主页' : 'Click Me!' }}
+                {{ isSelected ? '1' : 'Click Me!' }}
               </div>
             </v-card>
           </v-item>
