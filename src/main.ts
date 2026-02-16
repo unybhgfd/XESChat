@@ -1,7 +1,6 @@
 import { doInject } from "./xes-scripts/xes-script.ts";
-import { injectionConfig } from "./injection-config.ts";
+import { injectionConfig } from "./injections/injection-config.ts";
 import { createApp } from "vue";
-import App from "./pages/example.vue";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
@@ -31,7 +30,7 @@ function startApp() {
             <title>XESChat</title>
         `;
         document.body.innerHTML = "";
-        createApp(App)
+        createApp(injectionConfig.pathMap[host][path])
             .use(createVuetify({ components, directives }))
             .mount(
                 (() => {
