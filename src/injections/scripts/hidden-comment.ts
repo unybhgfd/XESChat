@@ -1,4 +1,4 @@
-import { md5ZeroWidthEncoder, xeschatZeroWidthEncrypter } from "../utils/zero-width.ts";
+import { md5ZeroWidthEncoder, xeschatZeroWidthEncrypter } from "../../utils/zero-width.ts";
 
 export async function injectHiddenComments() {
     setInterval(

@@ -96,7 +96,7 @@ export const xeschatZeroWidthEncrypter = {
      * @returns 结果, str不含隐写信息则报错
      */
     async getHiddenStr(str: string): Promise<string> {
-        let idx = str.match(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE).index;
+        let idx = <number>str.match(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE)?.index;
         str = str.slice(idx, idx + 69);
         return await (
             await fetch(xesOssStringUploader.OSS_URL + md5ZeroWidthEncoder.toMd5HexStr(str) + ".XESChatCommentMsg")

@@ -281,7 +281,7 @@ export async function getCommentList(projectData: ProjectData, page: number | st
  */
 export async function getReplyList(
     projectData: ProjectData,
-    commentId: number | string,
+    commentId: number,
     page: number | string,
     perPage: number | string,
 ) {
@@ -297,7 +297,7 @@ export async function sendComment(projectData: ProjectData, content: string): Pr
 
 export async function sendReply(
     projectData: ProjectData,
-    commentId: number | string,
+    commentId: number,
     content: string,
 ): Promise<number> {
     return await sendCommentOrReply(projectData.data.topic_id, commentId, content);
@@ -313,7 +313,7 @@ export async function deleteCommentOrReply(projectData: ProjectData, targetId: n
         },
         body: JSON.stringify({
             appid: 1001108,
-            topic_id: projData.data.topic_id,
+            topic_id: projectData.data.topic_id,
             id: targetId,
         }),
     });
