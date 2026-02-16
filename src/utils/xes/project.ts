@@ -295,11 +295,7 @@ export async function sendComment(projectData: ProjectData, content: string): Pr
     return await sendCommentOrReply(projectData.data.topic_id, 0, content);
 }
 
-export async function sendReply(
-    projectData: ProjectData,
-    commentId: number,
-    content: string,
-): Promise<number> {
+export async function sendReply(projectData: ProjectData, commentId: number, content: string): Promise<number> {
     return await sendCommentOrReply(projectData.data.topic_id, commentId, content);
 }
 

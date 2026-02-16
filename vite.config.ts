@@ -24,7 +24,6 @@ export default defineConfig({
                 fileName: "xes-chat.user.js",
                 externalGlobals: {
                     vue: cdn.jsdelivr("Vue", "dist/vue.global.prod.js"),
-                    vuetify: cdn.jsdelivr("Vuetify", "dist/vuetify.min.js"),
                 },
             },
         }),

@@ -41,7 +41,7 @@ export async function injectHiddenComments() {
                     elem.className = "submit-btn";
                     elem.innerText = "插入隐藏内容";
                     elem.addEventListener("click", async () => {
-                        let textAreaElement: HTMLTextAreaElement = document.querySelector("#comment-box");
+                        let textAreaElement = <HTMLTextAreaElement>document.querySelector("#comment-box");
                         textAreaElement.value =
                             (await xeschatZeroWidthEncrypter.encode(
                                 document.querySelector("#xeschat-hidden-msg-textarea").value,
