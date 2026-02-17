@@ -82,16 +82,10 @@ export type ReplyList = {
     };
 };
 
-/**
- * 查看作品
- */
-export const viewProject = new (class {
+const viewProjectClassInstance = new (class {
     cacheId = "";
     cacheData: ProjectData = <ProjectData>{};
 
-    /**
-     * @param id 目标作品id, 为数字0是清空缓存
-     */
     async viewProject(id: string | number) {
         if (id === 0) {
             this.cacheId = "0";
@@ -115,7 +109,13 @@ export const viewProject = new (class {
         this.cacheData = response;
         return response;
     }
-})().viewProject;
+})();
+
+/**
+ * 查看作品
+ * @param id 目标作品id, 为数字0是清空缓存
+ */
+export const viewProject = viewProjectClassInstance.viewProject.bind(viewProjectClassInstance);
 
 /**
  * 创建作品

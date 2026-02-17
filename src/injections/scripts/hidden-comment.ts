@@ -6,19 +6,20 @@ export async function injectHiddenComments() {
             try {
                 // 显示
                 let nodeList = document.querySelector("div.compare-comment")?.querySelectorAll(".comtent-area");
+                if (nodeList) {
+                    for (let element of nodeList) {
+                        if (element.nodeName === "DIV") element = element.children[0];
+                        let content: string = element.innerText;
 
-                for (let element of nodeList) {
-                    if (element.nodeName === "DIV") element = element.children[0];
-                    let content: string = element.innerText;
-
-                    // 是否包含隐藏消息
-                    if (md5ZeroWidthEncoder.ZERO_WIDTH_RE.test(content)) {
-                        let hiddenContent = await xeschatZeroWidthEncrypter.getHiddenStr(content);
-                        // 删除所有特定格式的零宽字符
-                        element.innerText = content.replace(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE_ALL, "");
-                        let elem = document.createElement("code");
-                        elem.innerText = hiddenContent;
-                        element.insertAdjacentElement("afterend", elem);
+                        // 是否包含隐藏消息
+                        if (md5ZeroWidthEncoder.ZERO_WIDTH_RE.test(content)) {
+                            let hiddenContent = await xeschatZeroWidthEncrypter.getHiddenStr(content);
+                            // 删除所有特定格式的零宽字符
+                            element.innerText = content.replace(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE_ALL, "");
+                            let elem = document.createElement("code");
+                            elem.innerText = hiddenContent;
+                            element.insertAdjacentElement("afterend", elem);
+                        }
                     }
                 }
 
@@ -26,12 +27,13 @@ export async function injectHiddenComments() {
                 if (document.getElementById("xeschat-hidden-msg") === null) {
                     let elem = document.createElement("div");
                     elem.innerHTML = `
-                            <textarea
-                             placeholder="在这输入需要隐藏的内容"
-                             style="resize: none; border: none; width: 100% !important; height: 100%;"
-                             id="xeschat-hidden-msg-textarea"
-                             cols="80"></textarea>
-                        `;
+                        <textarea
+                            placeholder="在这输入需要隐藏的内容"
+                            style="resize: none; border: none; width: 100% !important; height: 100%;"
+                            id="xeschat-hidden-msg-textarea"
+                            cols="80"
+                        ></textarea>
+                    `;
                     elem.style.height = "6em";
                     elem.className = "xes-textarea";
                     elem.id = "xeschat-hidden-msg";

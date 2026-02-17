@@ -1,33 +1,51 @@
 <script setup lang="ts">
 // example code
-// TODO:
 import Header from "../../components/header.vue";
+import { ref } from "vue";
+import { getAnnouncement } from "../../utils/management-info/announcement.ts";
+
+const announcementContent = ref("loading...");
+getAnnouncement().then((announcement) => {
+    announcementContent.value = announcement;
+});
 </script>
 
 <template>
     <v-app>
         <Header />
         <v-main>
-            <v-item-group selected-class="bg-primary">
-                <v-container>
-                    <v-row>
-                        <v-col v-for="n in 3" :key="n" cols="12" md="4">
-                            <v-item v-slot="{ isSelected, selectedClass, toggle }">
-                                <v-card
-                                    :class="['d-flex align-center', selectedClass]"
-                                    height="200"
-                                    dark
-                                    @click="toggle"
-                                >
-                                    <div class="text-h3 flex-grow-1 text-center">
-                                        {{ isSelected ? "XESChat主页" : "Click Me!" }}
-                                    </div>
-                                </v-card>
-                            </v-item>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-item-group>
+            <h1 class="text-center mt-3">XES Chat 首页</h1>
+            <v-divider></v-divider>
+            <div>
+                <v-card
+                    max-width="344"
+                    class="ma-3 d-inline-block"
+                    title="口号"
+                    text="无审查, 无限制, 高自由度, 随心所欲"
+                ></v-card>
+                <v-card
+                    max-width="344"
+                    class="ma-3 d-inline-block"
+                    append-icon="mdi-open-in-new"
+                    href="https://github.com/unybhgfd/XESChat"
+                    prepend-icon="mdi-github"
+                    rel="noopener"
+                    subtitle="查看GitHub上XESChat的官方repo"
+                    target="_blank"
+                    title="源代码"
+                ></v-card>
+                <v-card
+                    max-width="344"
+                    class="ma-3 d-inline-block"
+                    title="耻辱柱"
+                    disabled
+                    subtitle="对XESChat产生不利影响的人...目前只有学而思"
+                ></v-card>
+                <v-card class="ma-3 d-inline-block">
+                    <v-card-title>公告</v-card-title>
+                    <v-card-text>{{ announcementContent ? announcementContent : "loading..." }}</v-card-text>
+                </v-card>
+            </div>
         </v-main>
     </v-app>
 </template>

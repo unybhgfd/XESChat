@@ -1,4 +1,4 @@
-import { randomFilename } from "./random-filename.ts";
+import { randomFilename } from "../random-filename.ts";
 import SparkMD5 from "spark-md5";
 
 export const xesOssStringUploader = {

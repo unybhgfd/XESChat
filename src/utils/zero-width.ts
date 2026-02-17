@@ -1,4 +1,4 @@
-import { xesOssStringUploader } from "./upload-string.ts";
+import { xesOssStringUploader } from "./xes/upload-string.ts";
 
 export const md5ZeroWidthEncoder = {
     ZERO_WIDTH_MAP: {
