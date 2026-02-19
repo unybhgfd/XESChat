@@ -43,7 +43,7 @@ getAnnouncement().then((announcement) => {
                 ></v-card>
                 <v-card class="ma-3 d-inline-block">
                     <v-card-title>公告</v-card-title>
-                    <v-card-text>{{ announcementContent ? announcementContent : "loading..." }}</v-card-text>
+                    <v-card-text>{{ announcementContent }}</v-card-text>
                 </v-card>
             </div>
         </v-main>

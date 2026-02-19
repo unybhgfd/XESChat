@@ -14,11 +14,13 @@ export async function injectHiddenComments() {
                         // 是否包含隐藏消息
                         if (md5ZeroWidthEncoder.ZERO_WIDTH_RE.test(content)) {
                             let hiddenContent = await xeschatZeroWidthEncrypter.getHiddenStr(content);
-                            // 删除所有特定格式的零宽字符
-                            element.innerText = content.replace(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE_ALL, "");
-                            let elem = document.createElement("code");
-                            elem.innerText = hiddenContent;
-                            element.insertAdjacentElement("afterend", elem);
+                            if (md5ZeroWidthEncoder.ZERO_WIDTH_RE.test(content)) {
+                                // 删除所有特定格式的零宽字符
+                                element.innerText = content.replace(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE_ALL, "");
+                                let elem = document.createElement("code");
+                                elem.innerText = hiddenContent;
+                                element.insertAdjacentElement("afterend", elem);
+                            }
                         }
                     }
                 }
@@ -34,6 +36,7 @@ export async function injectHiddenComments() {
                             cols="80"
                         ></textarea>
                     `;
+                    elem.style = `border-style: solid; border-radius: 1rch;`
                     elem.style.height = "6em";
                     elem.className = "xes-textarea";
                     elem.id = "xeschat-hidden-msg";
@@ -42,6 +45,7 @@ export async function injectHiddenComments() {
                     elem = document.createElement("div");
                     elem.className = "submit-btn";
                     elem.innerText = "插入隐藏内容";
+                    elem.style = `border-style: solid; border-radius: 1rch; width: fit-content;`
                     elem.addEventListener("click", async () => {
                         let textAreaElement = <HTMLTextAreaElement>document.querySelector("#comment-box");
                         textAreaElement.value =
