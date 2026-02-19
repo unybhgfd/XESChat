@@ -2,7 +2,7 @@
 // example code
 import Header from "../../components/header.vue";
 import { ref } from "vue";
-import { getAnnouncement } from "../../utils/management-info/announcement.ts";
+import { getAnnouncement } from "../../utils/management-info.ts";
 
 const announcementContent = ref("loading...");
 getAnnouncement().then((announcement) => {
