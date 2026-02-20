@@ -24,6 +24,13 @@ if (
     }
 }
 
+function loadCSS(url: string) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = url;
+    document.head.appendChild(link);
+}
+
 async function startApp() {
     window.stop();
     document.head.innerHTML = `
@@ -40,6 +47,8 @@ async function startApp() {
     document.body.append(element);
     createApp(App).use(createVuetify({ components, directives })).mount(element);
 
-    import("@mdi/font/css/materialdesignicons.css");
-    import("vuetify/dist/vuetify.min.css");
+    // import("@mdi/font/css/materialdesignicons.css");
+    // import("vuetify/dist/vuetify.min.css");
+    loadCSS("https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css");
+    loadCSS("https://cdn.jsdelivr.net/npm/vuetify@3.11.8/dist/vuetify.min.css");
 }
