@@ -1,4 +1,4 @@
-import { xesOssStringUploader } from "./xes/upload-string.ts";
+import { StringUploader } from "./xes/tss-upload-string.ts";
 
 export const md5ZeroWidthEncoder = {
     ZERO_WIDTH_MAP: {
@@ -99,7 +99,7 @@ export const xeschatZeroWidthEncrypter = {
         let idx = <number>str.match(md5ZeroWidthEncoder.ZERO_WIDTH_RE_MORE)?.index;
         str = str.slice(idx, idx + 69);
         return await (
-            await fetch(xesOssStringUploader.OSS_URL + md5ZeroWidthEncoder.toMd5HexStr(str) + ".XESChatCommentMsg")
+            await fetch(StringUploader.OSS_URL + md5ZeroWidthEncoder.toMd5HexStr(str) + ".XESChatCommentMsg")
         ).text();
     },
 
@@ -108,7 +108,7 @@ export const xeschatZeroWidthEncrypter = {
      */
     async encode(str: string) {
         return md5ZeroWidthEncoder.toZeroWidth(
-            await xesOssStringUploader.uploadString(str, ".XESChatCommentMsg", true),
+            await StringUploader.uploadString(str, ".XESChatCommentMsg", true),
         );
     },
 };

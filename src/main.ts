@@ -12,7 +12,7 @@ const search = window.location.search;
 const pageComponents = import.meta.glob("./pages/**/*.vue");
 
 if (
-    pageComponents[`./pages/${host}${path}.vue`] &&
+    pageComponents[`./pages/${host}${path === "/" ? "/(index)" : path}.vue`] &&
     (!injectionNeedQuery[host]?.[path] || search.includes("xes_chat=true"))
 ) {
     // 符合规则, 替换目标页面
@@ -24,31 +24,22 @@ if (
     }
 }
 
-function loadCSS(url: string) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = url;
-    document.head.appendChild(link);
-}
-
 async function startApp() {
     window.stop();
     document.head.innerHTML = `
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>XESChat</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.11.8/dist/vuetify.min.css">
     `;
     document.body.innerHTML = "";
 
-    const loader = pageComponents[`./pages/${host}${path}.vue`];
+    const loader = pageComponents[`./pages/${host}${path === "/" ? "/(index)" : path}.vue`];
     const module: any = await loader();
     const App: Component = module.default;
 
     const element = document.createElement("div");
     document.body.append(element);
     createApp(App).use(createVuetify({ components, directives })).mount(element);
-
-    // import("@mdi/font/css/materialdesignicons.css");
-    // import("vuetify/dist/vuetify.min.css");
-    loadCSS("https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css");
-    loadCSS("https://cdn.jsdelivr.net/npm/vuetify@3.11.8/dist/vuetify.min.css");
 }

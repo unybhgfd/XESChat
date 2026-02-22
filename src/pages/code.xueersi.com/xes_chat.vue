@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// example code
 import Header from "../../components/header.vue";
 import { ref } from "vue";
 import { getAnnouncement } from "../../utils/management-info.ts";

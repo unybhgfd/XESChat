@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import "vuetify";
 import Header from "../../../components/header.vue";
 </script>
 

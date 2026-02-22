@@ -1,7 +1,7 @@
 import { randomFilename } from "../random-filename.ts";
 import SparkMD5 from "spark-md5";
 
-export const xesOssStringUploader = {
+export const StringUploader = {
     OSS_URL: "https://static0.xesimg.com/programme/python_assets/",
 
     async _getParams(md5: string, filename: string) {
